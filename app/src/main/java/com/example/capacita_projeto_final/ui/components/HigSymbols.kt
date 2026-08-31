@@ -96,24 +96,42 @@ fun HigMapSymbol(tint: Color, modifier: Modifier = Modifier, size: Dp = 25.dp) {
         val stroke = this.size.width * 0.085f
         val width = this.size.width
         val height = this.size.height
-        val top = height * 0.18f
-        val bottom = height * 0.82f
-        val lift = height * 0.06f
-        val panel = width / 3f
+        val left = stroke / 2f
+        val right = width - stroke / 2f
+        val third = width / 3f
+        val high = height * 0.2f
+        val low = height * 0.3f
+        val bottomHigh = height * 0.7f
+        val bottomLow = height * 0.8f
+
         drawPath(
             path = Path().apply {
-                moveTo(stroke / 2f, bottom - lift)
-                lineTo(panel, top)
-                lineTo(panel * 2f, bottom)
-                lineTo(width - stroke / 2f, top + lift)
-                lineTo(width - stroke / 2f, bottom - lift)
-                lineTo(panel * 2f, top + lift * 2f)
-                lineTo(panel, bottom - lift)
-                lineTo(stroke / 2f, top + lift)
+                moveTo(left, low)
+                lineTo(third, high)
+                lineTo(third * 2f, low)
+                lineTo(right, high)
+                lineTo(right, bottomHigh)
+                lineTo(third * 2f, bottomLow)
+                lineTo(third, bottomHigh)
+                lineTo(left, bottomLow)
                 close()
             },
             color = tint,
             style = Stroke(stroke, join = StrokeJoin.Round),
+        )
+        drawLine(
+            color = tint,
+            start = Offset(third, high),
+            end = Offset(third, bottomHigh),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
+        )
+        drawLine(
+            color = tint,
+            start = Offset(third * 2f, low),
+            end = Offset(third * 2f, bottomLow),
+            strokeWidth = stroke,
+            cap = StrokeCap.Round,
         )
     }
 }
