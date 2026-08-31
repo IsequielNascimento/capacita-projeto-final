@@ -4,7 +4,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-interface FieldOpsApi {
+interface CapacitaApi {
     @GET("posts/1")
     suspend fun getServiceStatus(): ApiPost
 

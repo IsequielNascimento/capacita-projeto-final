@@ -1,6 +1,6 @@
 package com.example.capacita_projeto_final.features.sync.data
 
-import com.example.capacita_projeto_final.features.sync.data.remote.FieldOpsApi
+import com.example.capacita_projeto_final.features.sync.data.remote.CapacitaApi
 import com.example.capacita_projeto_final.features.sync.data.remote.VisitPayload
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
 import com.example.capacita_projeto_final.features.visit.domain.Visit
@@ -12,7 +12,7 @@ data class SyncOutcome(
 )
 
 class SyncRepository(
-    private val api: FieldOpsApi,
+    private val api: CapacitaApi,
     private val visitRepository: VisitRepository,
 ) {
     suspend fun synchronizePendingVisits(): SyncOutcome {
