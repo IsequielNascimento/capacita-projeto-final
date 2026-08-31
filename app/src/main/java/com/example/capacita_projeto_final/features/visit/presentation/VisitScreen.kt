@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.capacita_projeto_final.features.visit.infrastructure.PhotoEvidenceStore
+import com.example.capacita_projeto_final.ui.components.NavigationTopBar
 import com.example.capacita_projeto_final.ui.theme.Muted
 import com.example.capacita_projeto_final.ui.theme.Success
 
@@ -104,7 +105,15 @@ fun VisitScreen(
         Unit
     }
 
-    Scaffold { contentPadding ->
+    Scaffold(
+        topBar = {
+            NavigationTopBar(
+                title = "Registro de visita",
+                subtitle = "Ponto da rota",
+                onBack = onBack,
+            )
+        },
+    ) { contentPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -113,8 +122,6 @@ fun VisitScreen(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            OutlinedButton(onClick = onBack) { Text("‹ Ponto") }
-            Text("Registro de visita", style = MaterialTheme.typography.labelLarge, color = Muted)
             when (state) {
                 VisitUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
                 is VisitUiState.Error -> ErrorContent(state.message, onBack)

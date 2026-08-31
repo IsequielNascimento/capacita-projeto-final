@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.ProjectedRoutePoint
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.route.domain.projectRoutePoints
+import com.example.capacita_projeto_final.ui.components.NavigationTopBar
 import com.example.capacita_projeto_final.ui.theme.Blue
 import com.example.capacita_projeto_final.ui.theme.Muted
 import com.example.capacita_projeto_final.ui.theme.Navy
@@ -56,7 +59,13 @@ fun RouteMapScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = { RouteMapHeader(onBack = onBack) },
+        topBar = {
+            NavigationTopBar(
+                title = "Mapa da rota",
+                subtitle = "Aldeota · Fortaleza",
+                onBack = onBack,
+            )
+        },
     ) { contentPadding ->
         when (state) {
             RouteUiState.Loading -> Column(
@@ -83,32 +92,6 @@ fun RouteMapScreen(
                 state = state,
                 onPointClick = onPointClick,
             )
-        }
-    }
-}
-
-@Composable
-private fun RouteMapHeader(onBack: () -> Unit) {
-    Surface(color = Navy) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(onClick = onBack) { Text("‹ Rota") }
-            Column {
-                Text(
-                    text = "Mapa da rota",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = "Aldeota · Fortaleza",
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.72f),
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
         }
     }
 }
@@ -301,7 +284,12 @@ private fun RouteMapPointCard(
                 Text(point.referencePoint, fontWeight = FontWeight.Bold)
                 Text(point.address, color = Muted, style = MaterialTheme.typography.bodySmall)
             }
-            Text("›", style = MaterialTheme.typography.headlineSmall, color = Muted)
+            Icon(
+                modifier = Modifier.height(24.dp),
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Muted,
+            )
         }
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
+import com.example.capacita_projeto_final.ui.components.NavigationTopBar
 import com.example.capacita_projeto_final.ui.theme.Muted
 import com.example.capacita_projeto_final.ui.theme.Success
 import java.text.DateFormat
@@ -40,7 +41,15 @@ fun PointDetailScreen(
     onReadingChange: (String) -> Unit,
     onStartVisit: () -> Unit,
 ) {
-    Scaffold { contentPadding ->
+    Scaffold(
+        topBar = {
+            NavigationTopBar(
+                title = "Detalhes do ponto",
+                subtitle = "Rota Aldeota",
+                onBack = onBack,
+            )
+        },
+    ) { contentPadding ->
         when (state) {
             PointDetailUiState.Loading -> Column(
                 modifier = Modifier.fillMaxSize().padding(contentPadding),
@@ -62,7 +71,6 @@ fun PointDetailScreen(
             is PointDetailUiState.Ready -> PointDetailContent(
                 modifier = Modifier.padding(contentPadding),
                 state = state,
-                onBack = onBack,
                 onReadingChange = onReadingChange,
                 onStartVisit = onStartVisit,
             )
@@ -74,7 +82,6 @@ fun PointDetailScreen(
 private fun PointDetailContent(
     modifier: Modifier,
     state: PointDetailUiState.Ready,
-    onBack: () -> Unit,
     onReadingChange: (String) -> Unit,
     onStartVisit: () -> Unit,
 ) {
@@ -82,8 +89,7 @@ private fun PointDetailContent(
         modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        OutlinedButton(onClick = onBack) { Text("‹ Rota") }
-        Text("Detalhes do ponto", style = MaterialTheme.typography.labelLarge, color = Muted)
+        Text("Ponto ${state.point.order}", style = MaterialTheme.typography.labelLarge, color = Muted)
         Text(state.point.customer, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
         PointDataCard(state.point)
         state.latestVisit?.let { visit ->
