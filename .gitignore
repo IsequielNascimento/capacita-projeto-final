@@ -1,0 +1,15 @@
+*.iml
+.DS_Store
+.gradle/
+.idea/
+.agents/
+.claude/
+.cxx/
+.externalNativeBuild/
+AGENTS.md
+CLAUDE.md
+app/build/
+build/
+captures/
+local.properties
+*.apk

@@ -1,0 +1,4 @@
+<full-backup-content>
+    <exclude domain="database" path="capacita_field_ops.db-shm" />
+    <exclude domain="database" path="capacita_field_ops.db-wal" />
+</full-backup-content>
