@@ -50,7 +50,11 @@ fun CapacitaApp(appContainer: AppContainer) {
     )
     val syncViewModel: SyncViewModel = viewModel(
         factory = ViewModelFactory {
-            SyncViewModel(appContainer.visitRepository, appContainer.syncRepository)
+            SyncViewModel(
+                appContainer.visitRepository,
+                appContainer.syncRepository,
+                appContainer.visitNotifier,
+            )
         },
     )
     val routeState by routeViewModel.uiState.collectAsStateWithLifecycle()
@@ -131,6 +135,7 @@ fun CapacitaApp(appContainer: AppContainer) {
                                 routeRepository = appContainer.routeRepository,
                                 visitRepository = appContainer.visitRepository,
                                 locationProvider = appContainer.deviceLocationProvider,
+                                visitNotifier = appContainer.visitNotifier,
                             )
                         },
                     )

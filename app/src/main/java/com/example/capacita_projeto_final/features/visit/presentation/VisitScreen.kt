@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.capacita_projeto_final.R
+import com.example.capacita_projeto_final.core.notification.NotificationPriming
 import com.example.capacita_projeto_final.features.route.presentation.LoadingContent
 import com.example.capacita_projeto_final.features.route.presentation.MessageContent
 import com.example.capacita_projeto_final.features.visit.infrastructure.AppSettings
@@ -118,6 +120,18 @@ fun VisitScreen(
         } else {
             onEvidenceMessage(EvidenceFeedback.LocationPermissionDenied)
             deniedPermission = EvidencePermission.Location
+        }
+    }
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (!granted) deniedPermission = EvidencePermission.Notifications
+    }
+    val visitSaved = state is VisitUiState.Saved
+    LaunchedEffect(visitSaved) {
+        if (visitSaved && NotificationPriming.shouldPrime(context)) {
+            NotificationPriming.markPrimed(context)
+            primingPermission = EvidencePermission.Notifications
         }
     }
     val requestPhoto = {
@@ -211,6 +225,10 @@ fun VisitScreen(
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION,
                         ),
+                    )
+
+                    EvidencePermission.Notifications -> notificationPermissionLauncher.launch(
+                        Manifest.permission.POST_NOTIFICATIONS,
                     )
                 }
             },

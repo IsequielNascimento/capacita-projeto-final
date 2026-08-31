@@ -2,6 +2,9 @@ package com.example.capacita_projeto_final.features.sync.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.capacita_projeto_final.core.notification.VisitNotifier
+import com.example.capacita_projeto_final.core.notification.syncResultNotification
+import com.example.capacita_projeto_final.features.sync.data.SyncOutcome
 import com.example.capacita_projeto_final.features.sync.data.SyncRepository
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
 import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
@@ -43,8 +46,9 @@ data class SyncUiState(
 // MARK: - View model
 
 class SyncViewModel(
-    visitRepository: VisitRepository,
+    private val visitRepository: VisitRepository,
     private val syncRepository: SyncRepository,
+    private val visitNotifier: VisitNotifier,
 ) : ViewModel() {
     private val running = MutableStateFlow(false)
     private val feedback = MutableStateFlow<SyncFeedback?>(null)
@@ -66,25 +70,42 @@ class SyncViewModel(
             running.value = true
             feedback.value = null
             progress.value = null
-            feedback.value = runCatching {
+
+            val outcome = runCatching {
                 syncRepository.synchronizePendingVisits { completed, total ->
                     progress.value = SyncProgress(completed, total)
                 }
             }
-                .fold(
-                    onSuccess = { outcome ->
-                        when {
-                            outcome.failed > 0 -> SyncFeedback.PartiallyFailed(outcome.synchronized, outcome.failed)
-                            outcome.synchronized > 0 -> SyncFeedback.Completed(outcome.synchronized)
-                            else -> SyncFeedback.NothingPending
-                        }
-                    },
-                    onFailure = { SyncFeedback.ServiceUnavailable },
-                )
+            feedback.value = outcome.fold(
+                onSuccess = SyncOutcome::toFeedback,
+                onFailure = { SyncFeedback.ServiceUnavailable },
+            )
+            announceResult(synchronized = outcome.getOrNull()?.synchronized ?: 0)
+
             running.value = false
             progress.value = null
         }
     }
+
+    /**
+     * Avisa o resultado do envio feito pela tela, usando a mesma decisão do envio
+     * disparado pela notificação. O aviso é secundário: falhar aqui não desfaz o envio.
+     */
+    private suspend fun announceResult(synchronized: Int) {
+        runCatching {
+            val remaining = visitRepository.pendingVisits().size
+            when (val result = syncResultNotification(synchronized, remaining)) {
+                null -> visitNotifier.dismiss()
+                else -> visitNotifier.show(result)
+            }
+        }
+    }
+}
+
+fun SyncOutcome.toFeedback(): SyncFeedback = when {
+    failed > 0 -> SyncFeedback.PartiallyFailed(synchronized, failed)
+    synchronized > 0 -> SyncFeedback.Completed(synchronized)
+    else -> SyncFeedback.NothingPending
 }
 
 private fun List<Visit>.toUiState(

@@ -21,4 +21,10 @@ enum class EvidencePermission(
         R.string.permission_location_denied_title,
         R.string.permission_location_denied_message,
     ),
+    Notifications(
+        R.string.permission_notifications_title,
+        R.string.permission_notifications_message,
+        R.string.permission_notifications_denied_title,
+        R.string.permission_notifications_denied_message,
+    ),
 }

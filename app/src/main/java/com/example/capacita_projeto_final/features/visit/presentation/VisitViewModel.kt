@@ -2,9 +2,12 @@ package com.example.capacita_projeto_final.features.visit.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.capacita_projeto_final.core.notification.VisitNotification
+import com.example.capacita_projeto_final.core.notification.VisitNotifier
 import com.example.capacita_projeto_final.features.route.data.RouteRepository
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
+import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.features.visit.infrastructure.DeviceLocation
 import com.example.capacita_projeto_final.features.visit.infrastructure.DeviceLocationProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +48,7 @@ class VisitViewModel(
     routeRepository: RouteRepository,
     private val visitRepository: VisitRepository,
     private val locationProvider: DeviceLocationProvider,
+    private val visitNotifier: VisitNotifier,
 ) : ViewModel() {
     private val saving = MutableStateFlow(false)
     private val result = MutableStateFlow<VisitUiState?>(null)
@@ -85,11 +89,27 @@ class VisitViewModel(
                     latitude = state.location?.latitude,
                     longitude = state.location?.longitude,
                 )
-                VisitUiState.Saved(state.point, reading)
-            }.getOrElse {
-                VisitUiState.Error(VisitError.SaveFailed)
-            }
+            }.fold(
+                onSuccess = { saved ->
+                    announceSaved(saved)
+                    VisitUiState.Saved(state.point, reading)
+                },
+                onFailure = { VisitUiState.Error(VisitError.SaveFailed) },
+            )
             saving.value = false
+        }
+    }
+
+    /** O aviso é secundário: uma falha ao notificar não invalida a visita gravada. */
+    private suspend fun announceSaved(saved: Visit) {
+        runCatching {
+            visitNotifier.show(
+                VisitNotification.Saved(
+                    installationCode = saved.installationCode,
+                    reading = saved.currentReading,
+                    pending = visitRepository.pendingVisits().size,
+                ),
+            )
         }
     }
 

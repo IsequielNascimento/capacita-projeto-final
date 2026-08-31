@@ -4,11 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import com.example.capacita_projeto_final.core.database.CapacitaDatabase
 import com.example.capacita_projeto_final.core.database.Migration1To2
+import com.example.capacita_projeto_final.core.notification.VisitNotifier
 import com.example.capacita_projeto_final.features.route.data.RouteRepository
 import com.example.capacita_projeto_final.features.sync.data.SyncRepository
 import com.example.capacita_projeto_final.features.sync.data.remote.CapacitaApi
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
 import com.example.capacita_projeto_final.features.visit.infrastructure.DeviceLocationProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -30,4 +34,8 @@ class AppContainer(context: Context) {
 
     val syncRepository = SyncRepository(capacitaApi, visitRepository)
     val deviceLocationProvider = DeviceLocationProvider(context)
+    val visitNotifier = VisitNotifier(context)
+
+    /** Escopo do processo, usado pelo trabalho disparado fora da UI. */
+    val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 }

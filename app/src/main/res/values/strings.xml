@@ -93,6 +93,16 @@
     <string name="visit_discard_message">A foto e a localização capturadas serão perdidas.</string>
     <string name="visit_keep_editing">Continuar preenchendo</string>
 
+    <string name="notification_channel_visits_name">Visitas</string>
+    <string name="notification_channel_visits_description">Avisa quando uma visita é salva e acompanha o envio ao servidor.</string>
+    <string name="notification_saved_title">Visita salva</string>
+    <string name="notification_saved_body">Instalação %1$s · leitura %2$d</string>
+    <string name="notification_syncing_title">Enviando visitas</string>
+    <string name="notification_syncing_body">O envio está em andamento.</string>
+    <string name="notification_sync_completed_title">Envio concluído</string>
+    <string name="notification_sync_failed_title">Falha no envio</string>
+    <string name="notification_action_retry">Tentar de novo</string>
+
     <string name="permission_camera_title">Anexar a foto do medidor</string>
     <string name="permission_camera_message">A câmera é usada apenas para registrar a foto do medidor junto com a leitura desta visita.</string>
     <string name="permission_location_title">Confirmar o local da leitura</string>
@@ -101,6 +111,10 @@
     <string name="permission_camera_denied_message">Libere a câmera nos Ajustes para anexar a foto. A visita pode ser salva sem ela.</string>
     <string name="permission_location_denied_title">Sem acesso à localização</string>
     <string name="permission_location_denied_message">Libere a localização nos Ajustes para anexar as coordenadas. A visita pode ser salva sem elas.</string>
+    <string name="permission_notifications_title">Avisar quando a visita for salva</string>
+    <string name="permission_notifications_message">O aviso confirma o registro e deixa você enviar as visitas sem abrir o aplicativo.</string>
+    <string name="permission_notifications_denied_title">Sem acesso às notificações</string>
+    <string name="permission_notifications_denied_message">Libere as notificações nos Ajustes para receber o aviso. As visitas continuam sendo salvas normalmente.</string>
 
     <string name="evidence_photo_attached">Foto anexada à visita.</string>
     <string name="evidence_photo_not_captured">A foto não foi salva. Tente novamente.</string>
@@ -137,6 +151,10 @@
     <plurals name="sync_visits_failed">
         <item quantity="one">%d sem envio</item>
         <item quantity="other">%d sem envio</item>
+    </plurals>
+    <plurals name="notification_visits_pending">
+        <item quantity="one">%d visita aguardando envio</item>
+        <item quantity="other">%d visitas aguardando envio</item>
     </plurals>
     <plurals name="map_visited_progress">
         <item quantity="one">%1$d de %2$d ponto visitado</item>

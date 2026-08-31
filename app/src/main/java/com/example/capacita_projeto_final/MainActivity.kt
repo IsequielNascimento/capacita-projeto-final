@@ -8,12 +8,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.SideEffect
-import com.example.capacita_projeto_final.core.AppContainer
 import com.example.capacita_projeto_final.ui.CapacitaApp
 import com.example.capacita_projeto_final.ui.theme.CapacitaTheme
 
 class MainActivity : ComponentActivity() {
-    private val appContainer by lazy { AppContainer(applicationContext) }
+    private val appContainer by lazy { (application as CapacitaApplication).container }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
