@@ -33,8 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.capacita_projeto_final.features.route.presentation.LoadingContent
 import com.example.capacita_projeto_final.features.route.presentation.MessageContent
+import com.example.capacita_projeto_final.features.visit.infrastructure.AppSettings
 import com.example.capacita_projeto_final.features.visit.infrastructure.PhotoEvidenceStore
 import com.example.capacita_projeto_final.ui.components.HigAction
+import com.example.capacita_projeto_final.ui.components.HigAlert
 import com.example.capacita_projeto_final.ui.components.HigActionSheet
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
 import com.example.capacita_projeto_final.ui.components.HigCameraSymbol
@@ -71,6 +73,8 @@ fun VisitScreen(
 
     var pendingPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var confirmingDiscard by remember { mutableStateOf(false) }
+    var primingPermission by remember { mutableStateOf<EvidencePermission?>(null) }
+    var deniedPermission by remember { mutableStateOf<EvidencePermission?>(null) }
 
     val readyState = state as? VisitUiState.Ready
     val requestDismiss = {
@@ -92,20 +96,30 @@ fun VisitScreen(
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { granted ->
-        if (granted) launchCamera() else onEvidenceMessage(EvidenceFeedback.CameraPermissionDenied)
+        if (granted) {
+            launchCamera()
+        } else {
+            onEvidenceMessage(EvidenceFeedback.CameraPermissionDenied)
+            deniedPermission = EvidencePermission.Camera
+        }
     }
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
     ) { permissions ->
         val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        if (granted) onCaptureLocation() else onEvidenceMessage(EvidenceFeedback.LocationPermissionDenied)
+        if (granted) {
+            onCaptureLocation()
+        } else {
+            onEvidenceMessage(EvidenceFeedback.LocationPermissionDenied)
+            deniedPermission = EvidencePermission.Location
+        }
     }
     val requestPhoto = {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             launchCamera()
         } else {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            primingPermission = EvidencePermission.Camera
         }
         Unit
     }
@@ -121,12 +135,7 @@ fun VisitScreen(
         if (granted) {
             onCaptureLocation()
         } else {
-            locationPermissionLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                ),
-            )
+            primingPermission = EvidencePermission.Location
         }
         Unit
     }
@@ -182,6 +191,44 @@ fun VisitScreen(
 
             is VisitUiState.Saved -> SavedContent(state = state, onFinish = onFinish)
         }
+    }
+
+    primingPermission?.let { permission ->
+        HigAlert(
+            title = stringResource(permission.primingTitleRes),
+            message = stringResource(permission.primingMessageRes),
+            confirmTitle = stringResource(R.string.action_allow),
+            onConfirm = {
+                primingPermission = null
+                when (permission) {
+                    EvidencePermission.Camera ->
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+
+                    EvidencePermission.Location -> locationPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                        ),
+                    )
+                }
+            },
+            dismissTitle = stringResource(R.string.action_not_now),
+            onDismissRequest = { primingPermission = null },
+        )
+    }
+
+    deniedPermission?.let { permission ->
+        HigAlert(
+            title = stringResource(permission.deniedTitleRes),
+            message = stringResource(permission.deniedMessageRes),
+            confirmTitle = stringResource(R.string.action_open_settings),
+            onConfirm = {
+                deniedPermission = null
+                AppSettings.open(context)
+            },
+            dismissTitle = stringResource(R.string.action_not_now),
+            onDismissRequest = { deniedPermission = null },
+        )
     }
 
     if (confirmingDiscard) {

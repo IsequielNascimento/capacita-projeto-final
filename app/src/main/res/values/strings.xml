@@ -92,6 +92,15 @@
     <string name="visit_discard_message">A foto e a localização capturadas serão perdidas.</string>
     <string name="visit_keep_editing">Continuar preenchendo</string>
 
+    <string name="permission_camera_title">Anexar a foto do medidor</string>
+    <string name="permission_camera_message">A câmera é usada apenas para registrar a foto do medidor junto com a leitura desta visita.</string>
+    <string name="permission_location_title">Confirmar o local da leitura</string>
+    <string name="permission_location_message">A localização é anexada à visita para comprovar o atendimento no endereço do ponto.</string>
+    <string name="permission_camera_denied_title">Sem acesso à câmera</string>
+    <string name="permission_camera_denied_message">Libere a câmera nos Ajustes para anexar a foto. A visita pode ser salva sem ela.</string>
+    <string name="permission_location_denied_title">Sem acesso à localização</string>
+    <string name="permission_location_denied_message">Libere a localização nos Ajustes para anexar as coordenadas. A visita pode ser salva sem elas.</string>
+
     <string name="evidence_photo_attached">Foto anexada à visita.</string>
     <string name="evidence_photo_not_captured">A foto não foi salva. Tente novamente.</string>
     <string name="evidence_photo_storage">Não há espaço disponível para guardar a foto.</string>
