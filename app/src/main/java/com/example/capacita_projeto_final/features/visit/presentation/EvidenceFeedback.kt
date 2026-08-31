@@ -3,7 +3,7 @@ package com.example.capacita_projeto_final.features.visit.presentation
 import androidx.annotation.StringRes
 import com.example.capacita_projeto_final.R
 
-enum class EvidenceFeedback(val isFailure: Boolean, @StringRes val messageRes: Int) {
+enum class EvidenceFeedback(val isFailure: Boolean, @param:StringRes val messageRes: Int) {
     PhotoAttached(false, R.string.evidence_photo_attached),
     PhotoNotCaptured(true, R.string.evidence_photo_not_captured),
     PhotoStorageUnavailable(true, R.string.evidence_photo_storage),

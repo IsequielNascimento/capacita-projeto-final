@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
-import androidx.compose.ui.res.stringResource
-import com.example.capacita_projeto_final.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,15 +26,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.capacita_projeto_final.R
 import com.example.capacita_projeto_final.features.route.presentation.LoadingContent
 import com.example.capacita_projeto_final.features.route.presentation.MessageContent
 import com.example.capacita_projeto_final.features.visit.infrastructure.AppSettings
 import com.example.capacita_projeto_final.features.visit.infrastructure.PhotoEvidenceStore
 import com.example.capacita_projeto_final.ui.components.HigAction
-import com.example.capacita_projeto_final.ui.components.HigAlert
 import com.example.capacita_projeto_final.ui.components.HigActionSheet
+import com.example.capacita_projeto_final.ui.components.HigAlert
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
 import com.example.capacita_projeto_final.ui.components.HigCameraSymbol
 import com.example.capacita_projeto_final.ui.components.HigCheckmark

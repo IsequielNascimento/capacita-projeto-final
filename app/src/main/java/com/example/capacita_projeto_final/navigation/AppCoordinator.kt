@@ -30,11 +30,12 @@ class AppCoordinator(private val navController: NavHostController) {
     }
 
     fun dismissVisit() {
-        navController.popBackStack(AppRoute.VisitSheet, inclusive = true)
+        navController.popBackStack()
     }
 
     fun finishVisit() {
-        navController.popBackStack(AppTab.Route.startRoute, inclusive = false)
+        navController.popBackStack()
+        navController.popBackStack()
     }
 
     fun goBack() {

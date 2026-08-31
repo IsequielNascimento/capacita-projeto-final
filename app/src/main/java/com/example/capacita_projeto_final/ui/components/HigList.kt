@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.ui.theme.HigMetrics
@@ -107,6 +108,7 @@ fun HigRow(
             horizontal = HigMetrics.contentMargin,
             vertical = HigMetrics.rowVerticalPadding,
         )
+        .semantics(mergeDescendants = true) { }
     Row(
         modifier = base,
         horizontalArrangement = Arrangement.spacedBy(HigMetrics.rowSpacing),

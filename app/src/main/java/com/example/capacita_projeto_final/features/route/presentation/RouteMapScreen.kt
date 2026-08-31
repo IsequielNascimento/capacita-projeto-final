@@ -2,6 +2,7 @@ package com.example.capacita_projeto_final.features.route.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -27,10 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.ProjectedRoutePoint
@@ -236,16 +238,15 @@ private fun MapMarker(
     Box(
         modifier = modifier
             .size(markerSize)
-            .then(
-                Modifier.clip(CircleShape),
-            ),
+            .clip(CircleShape)
+            .clickable(
+                role = Role.Button,
+                onClickLabel = stringResource(R.string.map_marker_action, order, customer, stateLabel),
+                onClick = onClick,
+            )
+            .semantics(mergeDescendants = true) { },
         contentAlignment = Alignment.Center,
     ) {
-        HigRow(
-            modifier = Modifier.size(markerSize),
-            onClick = onClick,
-            onClickLabel = stringResource(R.string.map_marker_action, order, customer, stateLabel),
-        ) {}
         Box(
             modifier = Modifier
                 .size(30.dp)

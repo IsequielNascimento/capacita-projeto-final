@@ -4,10 +4,10 @@ import androidx.annotation.StringRes
 import com.example.capacita_projeto_final.R
 
 enum class EvidencePermission(
-    @StringRes val primingTitleRes: Int,
-    @StringRes val primingMessageRes: Int,
-    @StringRes val deniedTitleRes: Int,
-    @StringRes val deniedMessageRes: Int,
+    @param:StringRes val primingTitleRes: Int,
+    @param:StringRes val primingMessageRes: Int,
+    @param:StringRes val deniedTitleRes: Int,
+    @param:StringRes val deniedMessageRes: Int,
 ) {
     Camera(
         R.string.permission_camera_title,
