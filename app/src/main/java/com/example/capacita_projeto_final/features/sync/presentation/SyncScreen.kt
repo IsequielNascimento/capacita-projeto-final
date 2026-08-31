@@ -3,7 +3,6 @@ package com.example.capacita_projeto_final.features.sync.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,6 +29,7 @@ import com.example.capacita_projeto_final.ui.components.HigRowSeparator
 import com.example.capacita_projeto_final.ui.components.rememberLargeTitleCollapsed
 import com.example.capacita_projeto_final.ui.theme.HigMetrics
 import com.example.capacita_projeto_final.ui.theme.HigTheme
+import com.example.capacita_projeto_final.ui.theme.rememberReadableContentPadding
 import java.text.DateFormat
 import java.util.Date
 
@@ -59,11 +59,7 @@ fun SyncScreen(state: SyncUiState, onSync: () -> Unit) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = listState,
-            contentPadding = PaddingValues(
-                start = HigMetrics.contentMargin,
-                end = HigMetrics.contentMargin,
-                bottom = HigMetrics.groupSpacing,
-            ),
+            contentPadding = rememberReadableContentPadding(),
             verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
         ) {
             item {
