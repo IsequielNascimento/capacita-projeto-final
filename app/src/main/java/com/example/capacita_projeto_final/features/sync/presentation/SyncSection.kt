@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.capacita_projeto_final.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
@@ -17,9 +19,9 @@ import com.example.capacita_projeto_final.ui.theme.HigTheme
 @Composable
 fun SyncSection(state: SyncUiState, onSync: () -> Unit) {
     val colors = HigTheme.colors
-    HigListSection(header = "Envio das visitas") {
+    HigListSection(header = stringResource(R.string.sync_header)) {
         HigRow {
-            Text("Aguardando envio", style = HigTheme.typography.body, color = colors.label)
+            Text(stringResource(R.string.sync_pending), style = HigTheme.typography.body, color = colors.label)
             Box(Modifier.weight(1f))
             Text(
                 text = state.pending.toString(),
@@ -29,7 +31,7 @@ fun SyncSection(state: SyncUiState, onSync: () -> Unit) {
         }
         HigRowSeparator()
         HigRow {
-            Text("Enviadas", style = HigTheme.typography.body, color = colors.label)
+            Text(stringResource(R.string.sync_sent), style = HigTheme.typography.body, color = colors.label)
             Box(Modifier.weight(1f))
             Text(
                 text = state.synced.toString(),
@@ -40,7 +42,7 @@ fun SyncSection(state: SyncUiState, onSync: () -> Unit) {
         if (state.errors > 0) {
             HigRowSeparator()
             HigRow {
-                Text("Com falha no envio", style = HigTheme.typography.body, color = colors.label)
+                Text(stringResource(R.string.sync_failed), style = HigTheme.typography.body, color = colors.label)
                 Box(Modifier.weight(1f))
                 Text(
                     text = state.errors.toString(),
@@ -56,10 +58,10 @@ fun SyncSection(state: SyncUiState, onSync: () -> Unit) {
                 .padding(HigMetrics.contentMargin),
         ) {
             HigBorderedButton(
-                title = "Enviar agora",
+                title = stringResource(R.string.sync_action),
                 onClick = onSync,
                 inProgress = state.running,
-                progressLabel = "Enviando",
+                progressLabel = stringResource(R.string.sync_in_progress),
             )
             state.feedback?.let { feedback ->
                 Text(

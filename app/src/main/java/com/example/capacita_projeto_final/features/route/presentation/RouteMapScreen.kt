@@ -19,6 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.example.capacita_projeto_final.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -62,16 +65,19 @@ fun RouteMapScreen(
             .background(colors.groupedBackground),
     ) {
         HigNavigationBar(
-            title = "Mapa da rota",
-            backTitle = "Rota",
-            backAccessibilityLabel = "Voltar para Rota",
+            title = stringResource(R.string.map_title),
+            backTitle = stringResource(R.string.route_title),
+            backAccessibilityLabel = stringResource(R.string.point_back_label),
             onBack = onBack,
             showsInlineTitle = collapsed,
             showsSeparator = collapsed,
         )
         when (state) {
-            RouteUiState.Loading -> LoadingContent("Carregando o mapa")
-            is RouteUiState.Error -> MessageContent(title = "Mapa indisponível", message = state.message)
+            RouteUiState.Loading -> LoadingContent(stringResource(R.string.map_loading))
+            is RouteUiState.Error -> MessageContent(
+                title = stringResource(R.string.map_unavailable_title),
+                message = stringResource(R.string.map_unavailable_message),
+            )
             is RouteUiState.Ready -> RouteMapContent(
                 listState = listState,
                 state = state,
@@ -102,8 +108,13 @@ private fun RouteMapContent(
     ) {
         item {
             HigLargeTitle(
-                text = "Mapa da rota",
-                subtitle = "${visitedPointIds.size} de ${state.points.size} pontos visitados",
+                text = stringResource(R.string.map_title),
+                subtitle = pluralStringResource(
+                    R.plurals.map_visited_progress,
+                    state.points.size,
+                    visitedPointIds.size,
+                    state.points.size,
+                ),
             )
         }
         item {
@@ -114,7 +125,7 @@ private fun RouteMapContent(
             )
         }
         item {
-            HigListSection(header = "Ordem de atendimento") {
+            HigListSection(header = stringResource(R.string.map_order_header)) {
                 orderedPoints.forEachIndexed { index, point ->
                     if (index > 0) HigRowSeparator(startInset = 60.dp)
                     RouteMapPointRow(
@@ -214,7 +225,7 @@ private fun MapMarker(
     val colors = HigTheme.colors
     val fill = if (visited) colors.successFill else colors.accentFill
     val onFill = if (visited) colors.onSuccessFill else colors.onAccentFill
-    val stateLabel = if (visited) "visitado" else "pendente"
+    val stateLabel = stringResource(if (visited) R.string.state_visited else R.string.state_pending)
 
     Box(
         modifier = modifier
@@ -227,7 +238,7 @@ private fun MapMarker(
         HigRow(
             modifier = Modifier.size(markerSize),
             onClick = onClick,
-            onClickLabel = "Abrir ponto $order, $customer, $stateLabel",
+            onClickLabel = stringResource(R.string.map_marker_action, order, customer, stateLabel),
         ) {}
         Box(
             modifier = Modifier
@@ -267,7 +278,7 @@ private fun ProjectedRoutePoint.asOffset(width: Float, height: Float) = Offset(
 @Composable
 private fun RouteMapPointRow(point: RoutePoint, visited: Boolean, onClick: () -> Unit) {
     val colors = HigTheme.colors
-    HigRow(onClick = onClick, onClickLabel = "Abrir os detalhes do ponto") {
+    HigRow(onClick = onClick, onClickLabel = stringResource(R.string.route_point_row_action)) {
         Box(
             modifier = Modifier
                 .defaultMinSize(minWidth = 28.dp, minHeight = 28.dp)
@@ -285,7 +296,7 @@ private fun RouteMapPointRow(point: RoutePoint, visited: Boolean, onClick: () ->
         Column(Modifier.weight(1f)) {
             Text(point.referencePoint, style = HigTheme.typography.body, color = colors.label)
             Text(
-                text = if (visited) "Visitado" else "Pendente",
+                text = stringResource(if (visited) R.string.state_visited else R.string.state_pending),
                 style = HigTheme.typography.footnote,
                 color = if (visited) colors.success else colors.secondaryLabel,
             )

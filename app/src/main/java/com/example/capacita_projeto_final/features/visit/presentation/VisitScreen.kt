@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.capacita_projeto_final.R
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -121,18 +123,18 @@ fun VisitScreen(
             .background(colors.groupedBackground),
     ) {
         HigNavigationBar(
-            title = "Registro de visita",
-            backTitle = "Ponto",
-            backAccessibilityLabel = "Voltar para o ponto",
+            title = stringResource(R.string.visit_title),
+            backTitle = stringResource(R.string.point_title_fallback),
+            backAccessibilityLabel = stringResource(R.string.visit_back_label),
             onBack = onBack,
             showsInlineTitle = collapsed,
             showsSeparator = collapsed,
         )
         when (state) {
-            VisitUiState.Loading -> LoadingContent("Carregando a visita")
+            VisitUiState.Loading -> LoadingContent(stringResource(R.string.visit_loading))
             is VisitUiState.Error -> MessageContent(
-                title = "Não foi possível continuar",
-                message = state.message,
+                title = stringResource(R.string.visit_error_title),
+                message = stringResource(state.reason.messageRes()),
             )
 
             is VisitUiState.Ready -> ReadyContent(
@@ -168,18 +170,18 @@ private fun ReadyContent(
         verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
     ) {
         item {
-            HigLargeTitle(text = "Registro de visita", subtitle = state.point.customer)
+            HigLargeTitle(text = stringResource(R.string.visit_title), subtitle = state.point.customer)
         }
         item {
-            HigListSection(header = "Leitura") {
-                HigValueRow("Instalação", state.point.installationCode)
+            HigListSection(header = stringResource(R.string.visit_reading_header)) {
+                HigValueRow(stringResource(R.string.point_installation), state.point.installationCode)
                 HigRowSeparator()
-                HigValueRow("Medidor", state.point.meterNumber)
+                HigValueRow(stringResource(R.string.point_meter), state.point.meterNumber)
                 HigRowSeparator()
-                HigValueRow("Leitura anterior", state.point.previousReading.toString())
+                HigValueRow(stringResource(R.string.point_previous_reading), state.point.previousReading.toString())
                 HigRowSeparator()
                 HigRow {
-                    Text("Leitura atual", style = HigTheme.typography.body, color = colors.label)
+                    Text(stringResource(R.string.visit_current_reading), style = HigTheme.typography.body, color = colors.label)
                     Box(Modifier.weight(1f))
                     Text(
                         text = state.reading.toString(),
@@ -198,10 +200,10 @@ private fun ReadyContent(
         }
         item {
             HigProminentButton(
-                title = "Salvar visita",
+                title = stringResource(R.string.visit_save),
                 onClick = onSave,
                 inProgress = state.saving,
-                progressLabel = "Salvando",
+                progressLabel = stringResource(R.string.visit_saving),
             )
         }
         item { Spacer(Modifier.height(HigMetrics.elementSpacing)) }
@@ -216,13 +218,15 @@ private fun EvidenceSection(
 ) {
     val colors = HigTheme.colors
     HigListSection(
-        header = "Evidências",
-        footer = state.feedback?.let(EvidenceFeedback::readableMessage),
+        header = stringResource(R.string.visit_evidence_header),
+        footer = state.feedback?.let { stringResource(it.messageRes) },
         footerColor = if (state.feedback?.isFailure == true) colors.destructive else null,
     ) {
         EvidenceRow(
-            label = "Foto do medidor",
-            value = if (state.photoUri == null) "Não anexada" else "Anexada",
+            label = stringResource(R.string.visit_photo_label),
+            value = stringResource(
+                if (state.photoUri == null) R.string.visit_photo_missing else R.string.visit_photo_attached,
+            ),
             captured = state.photoUri != null,
         )
         HigRowSeparator()
@@ -232,16 +236,23 @@ private fun EvidenceSection(
                 .padding(horizontal = HigMetrics.contentMargin, vertical = 12.dp),
         ) {
             HigBorderedButton(
-                title = if (state.photoUri == null) "Tirar foto" else "Tirar outra foto",
+                title = stringResource(
+                    if (state.photoUri == null) R.string.visit_take_photo else R.string.visit_retake_photo,
+                ),
                 onClick = onTakePhoto,
                 leading = { HigCameraSymbol(tint = colors.accent, size = 20.dp) },
             )
         }
         HigRowSeparator()
         EvidenceRow(
-            label = "Localização",
-            value = state.location?.let { "${it.latitude.formatCoordinate()}, ${it.longitude.formatCoordinate()}" }
-                ?: "Não capturada",
+            label = stringResource(R.string.visit_location_label),
+            value = state.location?.let {
+                stringResource(
+                    R.string.visit_coordinate_format,
+                    it.latitude.formatCoordinate(),
+                    it.longitude.formatCoordinate(),
+                )
+            } ?: stringResource(R.string.visit_location_missing),
             captured = state.location != null,
         )
         HigRowSeparator()
@@ -251,10 +262,10 @@ private fun EvidenceSection(
                 .padding(horizontal = HigMetrics.contentMargin, vertical = 12.dp),
         ) {
             HigBorderedButton(
-                title = "Usar localização atual",
+                title = stringResource(R.string.visit_use_location),
                 onClick = onGetLocation,
                 inProgress = state.locationLoading,
-                progressLabel = "Obtendo a localização",
+                progressLabel = stringResource(R.string.visit_location_in_progress),
                 leading = { HigLocationSymbol(tint = colors.accent, size = 20.dp) },
             )
         }
@@ -286,22 +297,22 @@ private fun SavedContent(state: VisitUiState.Saved, onFinish: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
     ) {
         Spacer(Modifier.height(HigMetrics.groupSpacing))
-        HigListSection(header = "Visita salva") {
-            HigValueRow("Cliente", state.point.customer)
+        HigListSection(header = stringResource(R.string.visit_saved_header)) {
+            HigValueRow(stringResource(R.string.visit_customer), state.point.customer)
             HigRowSeparator()
-            HigValueRow("Leitura", state.reading.toString())
+            HigValueRow(stringResource(R.string.visit_reading), state.reading.toString())
             HigRowSeparator()
             HigRow {
-                Text("Situação", style = HigTheme.typography.body, color = colors.label)
+                Text(stringResource(R.string.point_status), style = HigTheme.typography.body, color = colors.label)
                 Box(Modifier.weight(1f))
                 Text(
-                    text = "Aguardando envio",
+                    text = stringResource(R.string.sync_status_pending),
                     style = HigTheme.typography.body,
                     color = colors.secondaryLabel,
                 )
             }
         }
-        HigProminentButton(title = "Concluir", onClick = onFinish)
+        HigProminentButton(title = stringResource(R.string.action_done), onClick = onFinish)
     }
 }
 

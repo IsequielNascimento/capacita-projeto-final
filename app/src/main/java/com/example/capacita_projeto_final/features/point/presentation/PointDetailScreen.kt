@@ -17,6 +17,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.res.stringResource
+import com.example.capacita_projeto_final.R
+import com.example.capacita_projeto_final.features.visit.domain.ReadingError
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -51,7 +54,7 @@ fun PointDetailScreen(
     val colors = HigTheme.colors
     val listState = rememberLazyListState()
     val collapsed = rememberLargeTitleCollapsed(listState)
-    val title = (state as? PointDetailUiState.Ready)?.point?.customer ?: "Ponto"
+    val title = (state as? PointDetailUiState.Ready)?.point?.customer ?: stringResource(R.string.point_title_fallback)
 
     Column(
         Modifier
@@ -60,17 +63,17 @@ fun PointDetailScreen(
     ) {
         HigNavigationBar(
             title = title,
-            backTitle = "Rota",
-            backAccessibilityLabel = "Voltar para Rota",
+            backTitle = stringResource(R.string.route_title),
+            backAccessibilityLabel = stringResource(R.string.point_back_label),
             onBack = onBack,
             showsInlineTitle = collapsed,
             showsSeparator = collapsed,
         )
         when (state) {
-            PointDetailUiState.Loading -> LoadingContent("Carregando o ponto")
+            PointDetailUiState.Loading -> LoadingContent(stringResource(R.string.point_loading))
             PointDetailUiState.NotFound -> MessageContent(
-                title = "Ponto não encontrado",
-                message = "Este ponto não faz mais parte da rota.",
+                title = stringResource(R.string.point_not_found_title),
+                message = stringResource(R.string.point_not_found_message),
             )
 
             is PointDetailUiState.Ready -> PointDetailContent(
@@ -105,7 +108,7 @@ private fun PointDetailContent(
         item {
             HigLargeTitle(
                 text = state.point.customer,
-                subtitle = "Ponto ${state.point.order} da rota",
+                subtitle = stringResource(R.string.point_subtitle, state.point.order),
             )
         }
         item { PointDataSection(state.point) }
@@ -116,7 +119,7 @@ private fun PointDetailContent(
             ReadingSection(
                 readingInput = state.readingInput,
                 previousReading = state.point.previousReading,
-                validationMessage = state.validationMessage,
+                validationError = state.validationError,
                 onReadingChange = onReadingChange,
                 onStartVisit = onStartVisit,
             )
@@ -127,15 +130,15 @@ private fun PointDetailContent(
 
 @Composable
 private fun PointDataSection(point: RoutePoint) {
-    HigListSection(header = "Dados do ponto") {
-        HigValueRow("Instalação", point.installationCode)
+    HigListSection(header = stringResource(R.string.point_data_header)) {
+        HigValueRow(stringResource(R.string.point_installation), point.installationCode)
         HigRowSeparator()
-        HigValueRow("Medidor", point.meterNumber)
+        HigValueRow(stringResource(R.string.point_meter), point.meterNumber)
         HigRowSeparator()
-        HigValueRow("Leitura anterior", point.previousReading.toString())
+        HigValueRow(stringResource(R.string.point_previous_reading), point.previousReading.toString())
         HigRowSeparator()
         HigRow {
-            Text("Referência", style = HigTheme.typography.body, color = HigTheme.colors.label)
+            Text(stringResource(R.string.point_reference), style = HigTheme.typography.body, color = HigTheme.colors.label)
             Box(Modifier.weight(1f))
             Text(
                 text = point.referencePoint,
@@ -149,7 +152,7 @@ private fun PointDataSection(point: RoutePoint) {
                 .fillMaxWidth()
                 .padding(HigMetrics.contentMargin),
         ) {
-            Text("Endereço", style = HigTheme.typography.body, color = HigTheme.colors.label)
+            Text(stringResource(R.string.point_address), style = HigTheme.typography.body, color = HigTheme.colors.label)
             Text(
                 modifier = Modifier.padding(top = 2.dp),
                 text = point.address,
@@ -162,13 +165,13 @@ private fun PointDataSection(point: RoutePoint) {
 
 @Composable
 private fun LatestVisitSection(visit: Visit) {
-    HigListSection(header = "Última visita") {
-        HigValueRow("Leitura registrada", visit.currentReading.toString())
+    HigListSection(header = stringResource(R.string.point_latest_visit_header)) {
+        HigValueRow(stringResource(R.string.point_recorded_reading), visit.currentReading.toString())
         HigRowSeparator()
-        HigValueRow("Data", DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(visit.capturedAt)))
+        HigValueRow(stringResource(R.string.point_date), DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(visit.capturedAt)))
         HigRowSeparator()
         HigRow {
-            Text("Situação", style = HigTheme.typography.body, color = HigTheme.colors.label)
+            Text(stringResource(R.string.point_status), style = HigTheme.typography.body, color = HigTheme.colors.label)
             Box(Modifier.weight(1f))
             Text(
                 text = visit.syncStatus.readableLabel(),
@@ -183,16 +186,17 @@ private fun LatestVisitSection(visit: Visit) {
 private fun ReadingSection(
     readingInput: String,
     previousReading: Int,
-    validationMessage: String?,
+    validationError: ReadingError?,
     onReadingChange: (String) -> Unit,
     onStartVisit: () -> Unit,
 ) {
     val colors = HigTheme.colors
     Column(verticalArrangement = Arrangement.spacedBy(HigMetrics.contentMargin)) {
         HigListSection(
-            header = "Nova leitura",
-            footer = validationMessage ?: "A leitura precisa ser igual ou maior que $previousReading.",
-            footerColor = if (validationMessage != null) colors.destructive else null,
+            header = stringResource(R.string.reading_header),
+            footer = validationError?.let { stringResource(it.messageRes()) }
+                ?: stringResource(R.string.reading_hint, previousReading),
+            footerColor = if (validationError != null) colors.destructive else null,
         ) {
             Column(Modifier.padding(HigMetrics.contentMargin)) {
                 OutlinedTextField(
@@ -201,12 +205,12 @@ private fun ReadingSection(
                     onValueChange = onReadingChange,
                     placeholder = {
                         Text(
-                            "Leitura atual",
+                            stringResource(R.string.reading_placeholder),
                             style = HigTheme.typography.body,
                             color = colors.tertiaryLabel,
                         )
                     },
-                    isError = validationMessage != null,
+                    isError = validationError != null,
                     textStyle = HigTheme.typography.body,
                     shape = HigShapes.control,
                     keyboardOptions = KeyboardOptions(
@@ -227,6 +231,6 @@ private fun ReadingSection(
                 )
             }
         }
-        HigProminentButton(title = "Continuar", onClick = onStartVisit)
+        HigProminentButton(title = stringResource(R.string.action_continue), onClick = onStartVisit)
     }
 }

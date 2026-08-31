@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 
 // MARK: - State
 
+enum class VisitError { PointRemoved, SaveFailed }
+
 sealed interface VisitUiState {
     data object Loading : VisitUiState
     data class Ready(
@@ -32,7 +34,7 @@ sealed interface VisitUiState {
     }
 
     data class Saved(val point: RoutePoint, val reading: Int) : VisitUiState
-    data class Error(val message: String) : VisitUiState
+    data class Error(val reason: VisitError) : VisitUiState
 }
 
 // MARK: - View model
@@ -55,7 +57,7 @@ class VisitViewModel(
         evidence,
     ) { point, isSaving, completedState, currentEvidence ->
         completedState ?: if (point == null) {
-            VisitUiState.Error("Este ponto não faz mais parte da rota.")
+            VisitUiState.Error(VisitError.PointRemoved)
         } else {
             VisitUiState.Ready(
                 point = point,
@@ -85,7 +87,7 @@ class VisitViewModel(
                 )
                 VisitUiState.Saved(state.point, reading)
             }.getOrElse {
-                VisitUiState.Error("Não foi possível salvar a visita.")
+                VisitUiState.Error(VisitError.SaveFailed)
             }
             saving.value = false
         }

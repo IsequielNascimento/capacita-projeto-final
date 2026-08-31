@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.capacita_projeto_final.features.route.data.RouteRepository
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
+import com.example.capacita_projeto_final.features.visit.domain.ReadingError
 import com.example.capacita_projeto_final.features.visit.domain.ReadingValidation
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.features.visit.domain.validateReading
@@ -20,7 +21,7 @@ sealed interface PointDetailUiState {
         val point: RoutePoint,
         val latestVisit: Visit?,
         val readingInput: String,
-        val validationMessage: String?,
+        val validationError: ReadingError?,
     ) : PointDetailUiState
     data object NotFound : PointDetailUiState
 }
@@ -31,24 +32,24 @@ class PointDetailViewModel(
     visitRepository: VisitRepository,
 ) : ViewModel() {
     private val readingInput = MutableStateFlow("")
-    private val validationMessage = MutableStateFlow<String?>(null)
+    private val validationError = MutableStateFlow<ReadingError?>(null)
 
     val uiState: StateFlow<PointDetailUiState> = combine(
         routeRepository.observePoint(pointId),
         visitRepository.observeLatestForPoint(pointId),
         readingInput,
-        validationMessage,
-    ) { point, latestVisit, input, message ->
+        validationError,
+    ) { point, latestVisit, input, error ->
         if (point == null) {
             PointDetailUiState.NotFound
         } else {
-            PointDetailUiState.Ready(point, latestVisit, input, message)
+            PointDetailUiState.Ready(point, latestVisit, input, error)
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PointDetailUiState.Loading)
 
     fun updateReading(value: String) {
         readingInput.value = value.filter(Char::isDigit)
-        validationMessage.value = null
+        validationError.value = null
     }
 
     fun prepareVisit(): Int? {
@@ -56,7 +57,7 @@ class PointDetailViewModel(
         return when (val result = validateReading(state.readingInput, state.point.previousReading)) {
             is ReadingValidation.Valid -> result.reading
             is ReadingValidation.Invalid -> {
-                validationMessage.value = result.message
+                validationError.value = result.reason
                 null
             }
         }

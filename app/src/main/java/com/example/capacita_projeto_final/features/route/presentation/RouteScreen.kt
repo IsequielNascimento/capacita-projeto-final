@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.example.capacita_projeto_final.R
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,13 +58,16 @@ fun RouteScreen(
             .background(colors.groupedBackground),
     ) {
         HigNavigationBar(
-            title = "Rota",
+            title = stringResource(R.string.route_title),
             showsInlineTitle = collapsed,
             showsSeparator = collapsed,
         )
         when (state) {
-            RouteUiState.Loading -> LoadingContent("Carregando a rota")
-            is RouteUiState.Error -> MessageContent(title = "Rota indisponível", message = state.message)
+            RouteUiState.Loading -> LoadingContent(stringResource(R.string.route_loading))
+            is RouteUiState.Error -> MessageContent(
+                title = stringResource(R.string.route_unavailable_title),
+                message = stringResource(R.string.route_unavailable_message),
+            )
             is RouteUiState.Ready -> RouteContent(
                 listState = listState,
                 points = state.points,
@@ -97,12 +102,19 @@ private fun RouteContent(
         verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
     ) {
         item {
-            HigLargeTitle(text = "Rota", subtitle = "Aldeota · Fortaleza")
+            HigLargeTitle(
+                text = stringResource(R.string.route_title),
+                subtitle = stringResource(R.string.route_subtitle),
+            )
         }
         item {
             HigListSection {
                 HigRow {
-                    Text("Pontos", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                    Text(
+                        text = stringResource(R.string.route_summary_points),
+                        style = HigTheme.typography.body,
+                        color = HigTheme.colors.label,
+                    )
                     Box(Modifier.weight(1f))
                     Text(
                         text = points.size.toString(),
@@ -112,7 +124,11 @@ private fun RouteContent(
                 }
                 HigRowSeparator()
                 HigRow {
-                    Text("Visitados", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                    Text(
+                        text = stringResource(R.string.route_summary_visited),
+                        style = HigTheme.typography.body,
+                        color = HigTheme.colors.label,
+                    )
                     Box(Modifier.weight(1f))
                     Text(
                         text = latestVisits.size.toString(),
@@ -121,8 +137,12 @@ private fun RouteContent(
                     )
                 }
                 HigRowSeparator()
-                HigRow(onClick = onOpenMap, onClickLabel = "Abrir o mapa da rota") {
-                    Text("Mapa da rota", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                HigRow(onClick = onOpenMap, onClickLabel = stringResource(R.string.route_map_row_action)) {
+                    Text(
+                        text = stringResource(R.string.route_map_row),
+                        style = HigTheme.typography.body,
+                        color = HigTheme.colors.label,
+                    )
                     Box(Modifier.weight(1f))
                     HigDisclosureIndicator()
                 }
@@ -132,7 +152,7 @@ private fun RouteContent(
             SyncSection(state = syncState, onSync = onSync)
         }
         item {
-            HigListSection(header = "Pontos de atendimento") {
+            HigListSection(header = stringResource(R.string.route_points_header)) {
                 points.forEachIndexed { index, point ->
                     if (index > 0) HigRowSeparator(startInset = 60.dp)
                     RoutePointRow(
@@ -150,7 +170,7 @@ private fun RouteContent(
 @Composable
 private fun RoutePointRow(point: RoutePoint, visit: Visit?, onClick: () -> Unit) {
     val colors = HigTheme.colors
-    HigRow(onClick = onClick, onClickLabel = "Abrir os detalhes do ponto") {
+    HigRow(onClick = onClick, onClickLabel = stringResource(R.string.route_point_row_action)) {
         OrderBadge(order = point.order, visited = visit != null)
         Column(Modifier.weight(1f)) {
             Text(point.customer, style = HigTheme.typography.body, color = colors.label)

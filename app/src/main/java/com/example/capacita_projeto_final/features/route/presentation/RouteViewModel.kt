@@ -19,7 +19,7 @@ sealed interface RouteUiState {
         val points: List<RoutePoint>,
         val latestVisits: Map<Int, Visit>,
     ) : RouteUiState
-    data class Error(val message: String) : RouteUiState
+    data object Error : RouteUiState
 }
 
 class RouteViewModel(
@@ -36,7 +36,7 @@ class RouteViewModel(
         val readyState: RouteUiState = RouteUiState.Ready(points, latestVisits)
         readyState
     }
-        .catch { emit(RouteUiState.Error("Não foi possível abrir a rota local.")) }
+        .catch { emit(RouteUiState.Error) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RouteUiState.Loading)
 
     init {

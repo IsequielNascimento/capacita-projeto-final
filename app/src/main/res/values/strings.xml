@@ -1,3 +1,122 @@
 <resources>
-    <string name="app_name">Capacita Projeto Final</string>
+    <string name="app_name">Capacita Rota</string>
+
+    <string name="action_continue">Continuar</string>
+    <string name="action_done">Concluir</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_save">Salvar</string>
+    <string name="action_discard">Descartar</string>
+    <string name="action_open_settings">Abrir Ajustes</string>
+    <string name="action_not_now">Agora não</string>
+    <string name="action_allow">Permitir</string>
+
+    <string name="state_visited">Visitado</string>
+    <string name="state_pending">Pendente</string>
+
+    <string name="route_title">Rota</string>
+    <string name="route_subtitle">Aldeota · Fortaleza</string>
+    <string name="route_loading">Carregando a rota</string>
+    <string name="route_unavailable_title">Rota indisponível</string>
+    <string name="route_unavailable_message">Não foi possível abrir a rota guardada no aparelho.</string>
+    <string name="route_empty_title">Nenhum ponto na rota</string>
+    <string name="route_empty_message">Quando a rota for atribuída, os pontos aparecem aqui.</string>
+    <string name="route_summary_points">Pontos</string>
+    <string name="route_summary_visited">Visitados</string>
+    <string name="route_map_row">Mapa da rota</string>
+    <string name="route_map_row_action">Abrir o mapa da rota</string>
+    <string name="route_points_header">Pontos de atendimento</string>
+    <string name="route_point_row_action">Abrir os detalhes do ponto</string>
+
+    <string name="sync_header">Envio das visitas</string>
+    <string name="sync_pending">Aguardando envio</string>
+    <string name="sync_sent">Enviadas</string>
+    <string name="sync_failed">Com falha no envio</string>
+    <string name="sync_action">Enviar agora</string>
+    <string name="sync_in_progress">Enviando</string>
+    <string name="sync_nothing_pending">Nenhuma visita aguardando envio.</string>
+    <string name="sync_service_unavailable">Não foi possível conectar ao servidor.</string>
+    <string name="sync_partial_format">%1$s, %2$s.</string>
+    <string name="sync_status_pending">Aguardando envio</string>
+    <string name="sync_status_sending">Enviando</string>
+    <string name="sync_status_sent">Enviada</string>
+    <string name="sync_status_failed">Falha no envio</string>
+
+    <string name="point_title_fallback">Ponto</string>
+    <string name="point_back_label">Voltar para Rota</string>
+    <string name="point_loading">Carregando o ponto</string>
+    <string name="point_not_found_title">Ponto não encontrado</string>
+    <string name="point_not_found_message">Este ponto não faz mais parte da rota.</string>
+    <string name="point_subtitle">Ponto %1$d da rota</string>
+    <string name="point_data_header">Dados do ponto</string>
+    <string name="point_installation">Instalação</string>
+    <string name="point_meter">Medidor</string>
+    <string name="point_previous_reading">Leitura anterior</string>
+    <string name="point_reference">Referência</string>
+    <string name="point_address">Endereço</string>
+    <string name="point_latest_visit_header">Última visita</string>
+    <string name="point_recorded_reading">Leitura registrada</string>
+    <string name="point_date">Data</string>
+    <string name="point_status">Situação</string>
+
+    <string name="reading_header">Nova leitura</string>
+    <string name="reading_placeholder">Leitura atual</string>
+    <string name="reading_hint">A leitura precisa ser igual ou maior que %1$d.</string>
+    <string name="reading_error_not_a_number">Informe a leitura usando apenas números.</string>
+    <string name="reading_error_below_previous">A leitura não pode ser menor que a anterior.</string>
+
+    <string name="visit_title">Registro de visita</string>
+    <string name="visit_back_label">Voltar para o ponto</string>
+    <string name="visit_loading">Carregando a visita</string>
+    <string name="visit_error_title">Não foi possível continuar</string>
+    <string name="visit_error_point_removed">Este ponto não faz mais parte da rota.</string>
+    <string name="visit_error_save_failed">Não foi possível salvar a visita.</string>
+    <string name="visit_reading_header">Leitura</string>
+    <string name="visit_current_reading">Leitura atual</string>
+    <string name="visit_evidence_header">Evidências</string>
+    <string name="visit_photo_label">Foto do medidor</string>
+    <string name="visit_photo_attached">Anexada</string>
+    <string name="visit_photo_missing">Não anexada</string>
+    <string name="visit_take_photo">Tirar foto</string>
+    <string name="visit_retake_photo">Tirar outra foto</string>
+    <string name="visit_location_label">Localização</string>
+    <string name="visit_location_missing">Não capturada</string>
+    <string name="visit_use_location">Usar localização atual</string>
+    <string name="visit_location_in_progress">Obtendo a localização</string>
+    <string name="visit_save">Salvar visita</string>
+    <string name="visit_saving">Salvando</string>
+    <string name="visit_saved_header">Visita salva</string>
+    <string name="visit_customer">Cliente</string>
+    <string name="visit_reading">Leitura</string>
+    <string name="visit_coordinate_format">%1$s, %2$s</string>
+
+    <string name="evidence_photo_attached">Foto anexada à visita.</string>
+    <string name="evidence_photo_not_captured">A foto não foi salva. Tente novamente.</string>
+    <string name="evidence_photo_storage">Não há espaço disponível para guardar a foto.</string>
+    <string name="evidence_camera_denied">Sem acesso à câmera, a visita é salva sem foto.</string>
+    <string name="evidence_location_attached">Localização anexada à visita.</string>
+    <string name="evidence_location_unavailable">Não foi possível obter a localização agora.</string>
+    <string name="evidence_location_denied">Sem acesso à localização, a visita é salva sem coordenadas.</string>
+
+    <string name="map_title">Mapa da rota</string>
+    <string name="map_loading">Carregando o mapa</string>
+    <string name="map_unavailable_title">Mapa indisponível</string>
+    <string name="map_unavailable_message">Não foi possível montar o traçado da rota.</string>
+    <string name="map_empty_title">Sem pontos para exibir</string>
+    <string name="map_empty_message">O traçado aparece assim que a rota tiver pontos.</string>
+    <string name="map_order_header">Ordem de atendimento</string>
+    <string name="map_marker_action">Abrir ponto %1$d, %2$s, %3$s</string>
+    <string name="map_north">Norte</string>
+
+    <plurals name="sync_visits_sent">
+        <item quantity="one">%d visita enviada</item>
+        <item quantity="other">%d visitas enviadas</item>
+    </plurals>
+    <plurals name="sync_visits_failed">
+        <item quantity="one">%d sem envio</item>
+        <item quantity="other">%d sem envio</item>
+    </plurals>
+    <plurals name="map_visited_progress">
+        <item quantity="one">%1$d de %2$d ponto visitado</item>
+        <item quantity="other">%1$d de %2$d pontos visitados</item>
+    </plurals>
 </resources>
