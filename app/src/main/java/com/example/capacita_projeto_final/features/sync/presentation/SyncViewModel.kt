@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.capacita_projeto_final.features.sync.data.SyncRepository
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
+import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,27 +13,41 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+// MARK: - State
+
+sealed interface SyncFeedback {
+    data class Completed(val synchronized: Int) : SyncFeedback
+    data class PartiallyFailed(val synchronized: Int, val failed: Int) : SyncFeedback
+    data object NothingPending : SyncFeedback
+    data object ServiceUnavailable : SyncFeedback
+}
+
 data class SyncUiState(
     val pending: Int = 0,
     val synced: Int = 0,
     val errors: Int = 0,
     val running: Boolean = false,
-    val message: String? = null,
-)
+    val feedback: SyncFeedback? = null,
+) {
+    val failed: Boolean
+        get() = feedback is SyncFeedback.ServiceUnavailable || feedback is SyncFeedback.PartiallyFailed
+}
+
+// MARK: - View model
 
 class SyncViewModel(
     visitRepository: VisitRepository,
     private val syncRepository: SyncRepository,
 ) : ViewModel() {
     private val running = MutableStateFlow(false)
-    private val message = MutableStateFlow<String?>(null)
+    private val feedback = MutableStateFlow<SyncFeedback?>(null)
 
     val uiState: StateFlow<SyncUiState> = combine(
         visitRepository.observeVisits(),
         running,
-        message,
-    ) { visits, isRunning, currentMessage ->
-        visits.toUiState(isRunning, currentMessage)
+        feedback,
+    ) { visits, isRunning, currentFeedback ->
+        visits.toUiState(isRunning, currentFeedback)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SyncUiState())
 
     fun synchronize() {
@@ -40,27 +55,27 @@ class SyncViewModel(
 
         viewModelScope.launch {
             running.value = true
-            message.value = null
-            message.value = runCatching { syncRepository.synchronizePendingVisits() }
+            feedback.value = null
+            feedback.value = runCatching { syncRepository.synchronizePendingVisits() }
                 .fold(
                     onSuccess = { outcome ->
                         when {
-                            outcome.failed > 0 -> "${outcome.synchronized} enviada(s), ${outcome.failed} com falha."
-                            outcome.synchronized > 0 -> "${outcome.synchronized} visita(s) sincronizada(s)."
-                            else -> "Serviço disponível. Nenhuma visita pendente."
+                            outcome.failed > 0 -> SyncFeedback.PartiallyFailed(outcome.synchronized, outcome.failed)
+                            outcome.synchronized > 0 -> SyncFeedback.Completed(outcome.synchronized)
+                            else -> SyncFeedback.NothingPending
                         }
                     },
-                    onFailure = { "Não foi possível acessar a API externa." },
+                    onFailure = { SyncFeedback.ServiceUnavailable },
                 )
             running.value = false
         }
     }
 }
 
-private fun List<Visit>.toUiState(running: Boolean, message: String?) = SyncUiState(
-    pending = count { it.syncStatus == "pending" || it.syncStatus == "syncing" },
-    synced = count { it.syncStatus == "synced" },
-    errors = count { it.syncStatus == "error" },
+private fun List<Visit>.toUiState(running: Boolean, feedback: SyncFeedback?) = SyncUiState(
+    pending = count { it.syncStatus == SyncStatus.Pending || it.syncStatus == SyncStatus.Sending },
+    synced = count { it.syncStatus == SyncStatus.Sent },
+    errors = count { it.syncStatus == SyncStatus.Failed },
     running = running,
-    message = message,
+    feedback = feedback,
 )

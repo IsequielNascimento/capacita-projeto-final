@@ -1,5 +1,6 @@
 package com.example.capacita_projeto_final.features.sync.data
 
+import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -19,7 +20,7 @@ class SyncPayloadTest {
             latitude = -3.7,
             longitude = -38.5,
             capturedAt = 1234,
-            syncStatus = "pending",
+            syncStatus = SyncStatus.Pending,
         ).toPayload()
 
         assertEquals(101, payload.userId)

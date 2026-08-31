@@ -9,21 +9,26 @@ import com.example.capacita_projeto_final.ui.theme.CapacitaTheme
 import org.junit.Rule
 import org.junit.Test
 
-class NavigationTopBarTest {
+class HigNavigationBarTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
     @Test
-    fun backButtonUsesAccessibleTouchTarget() {
+    fun backControlMeetsMinimumTouchTarget() {
         composeTestRule.setContent {
             CapacitaTheme {
-                NavigationTopBar(title = "Mapa da rota", onBack = {})
+                HigNavigationBar(
+                    title = "Mapa da rota",
+                    backTitle = "Rota",
+                    backAccessibilityLabel = "Voltar para Rota",
+                    onBack = {},
+                )
             }
         }
 
         composeTestRule
-            .onNodeWithContentDescription("Voltar")
-            .assertWidthIsAtLeast(48.dp)
-            .assertHeightIsAtLeast(48.dp)
+            .onNodeWithContentDescription("Voltar para Rota")
+            .assertWidthIsAtLeast(44.dp)
+            .assertHeightIsAtLeast(44.dp)
     }
 }

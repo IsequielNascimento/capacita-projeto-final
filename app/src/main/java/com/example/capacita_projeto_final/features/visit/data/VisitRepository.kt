@@ -3,6 +3,7 @@ package com.example.capacita_projeto_final.features.visit.data
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.visit.data.local.VisitDao
 import com.example.capacita_projeto_final.features.visit.data.local.VisitEntity
+import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,7 @@ class VisitRepository(
             latitude = latitude,
             longitude = longitude,
             capturedAt = System.currentTimeMillis(),
-            syncStatus = "pending",
+            syncStatus = SyncStatus.Pending.storageValue,
         )
         visitDao.insert(visit)
         return visit.toDomain()
@@ -44,7 +45,7 @@ class VisitRepository(
 
     suspend fun pendingVisits(): List<Visit> = visitDao.getPending().map { it.toDomain() }
 
-    suspend fun updateSyncStatus(visitId: String, status: String) {
-        visitDao.updateSyncStatus(visitId, status)
+    suspend fun updateSyncStatus(visitId: String, status: SyncStatus) {
+        visitDao.updateSyncStatus(visitId, status.storageValue)
     }
 }

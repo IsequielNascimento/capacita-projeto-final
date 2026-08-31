@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+// MARK: - State
+
 sealed interface VisitUiState {
     data object Loading : VisitUiState
     data class Ready(
@@ -23,11 +25,17 @@ sealed interface VisitUiState {
         val photoUri: String?,
         val location: DeviceLocation?,
         val locationLoading: Boolean,
-        val evidenceMessage: String?,
-    ) : VisitUiState
+        val feedback: EvidenceFeedback?,
+    ) : VisitUiState {
+        val hasUnsavedEvidence: Boolean
+            get() = photoUri != null || location != null
+    }
+
     data class Saved(val point: RoutePoint, val reading: Int) : VisitUiState
     data class Error(val message: String) : VisitUiState
 }
+
+// MARK: - View model
 
 class VisitViewModel(
     pointId: Int,
@@ -47,7 +55,7 @@ class VisitViewModel(
         evidence,
     ) { point, isSaving, completedState, currentEvidence ->
         completedState ?: if (point == null) {
-            VisitUiState.Error("O ponto desta visita não está mais disponível.")
+            VisitUiState.Error("Este ponto não faz mais parte da rota.")
         } else {
             VisitUiState.Ready(
                 point = point,
@@ -56,7 +64,7 @@ class VisitViewModel(
                 photoUri = currentEvidence.photoUri,
                 location = currentEvidence.location,
                 locationLoading = currentEvidence.locationLoading,
-                evidenceMessage = currentEvidence.message,
+                feedback = currentEvidence.feedback,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VisitUiState.Loading)
@@ -77,7 +85,7 @@ class VisitViewModel(
                 )
                 VisitUiState.Saved(state.point, reading)
             }.getOrElse {
-                VisitUiState.Error("Não foi possível salvar a visita no dispositivo.")
+                VisitUiState.Error("Não foi possível salvar a visita.")
             }
             saving.value = false
         }
@@ -85,34 +93,34 @@ class VisitViewModel(
 
     fun confirmPhoto(uri: String?) {
         evidence.value = if (uri == null) {
-            evidence.value.copy(message = "A foto não foi capturada.")
+            evidence.value.copy(feedback = EvidenceFeedback.PhotoNotCaptured)
         } else {
-            evidence.value.copy(photoUri = uri, message = "Foto anexada à visita.")
+            evidence.value.copy(photoUri = uri, feedback = EvidenceFeedback.PhotoAttached)
         }
     }
 
-    fun reportEvidenceMessage(message: String) {
-        evidence.value = evidence.value.copy(message = message)
+    fun reportEvidenceFeedback(feedback: EvidenceFeedback) {
+        evidence.value = evidence.value.copy(feedback = feedback)
     }
 
     fun captureLocation() {
         if (evidence.value.locationLoading) return
 
         viewModelScope.launch {
-            evidence.value = evidence.value.copy(locationLoading = true, message = null)
+            evidence.value = evidence.value.copy(locationLoading = true, feedback = null)
             evidence.value = runCatching { locationProvider.currentLocation() }
                 .fold(
                     onSuccess = { location ->
                         evidence.value.copy(
                             location = location,
                             locationLoading = false,
-                            message = "Localização anexada à visita.",
+                            feedback = EvidenceFeedback.LocationAttached,
                         )
                     },
                     onFailure = {
                         evidence.value.copy(
                             locationLoading = false,
-                            message = "Não foi possível obter a localização atual.",
+                            feedback = EvidenceFeedback.LocationUnavailable,
                         )
                     },
                 )
@@ -124,5 +132,5 @@ private data class VisitEvidenceState(
     val photoUri: String? = null,
     val location: DeviceLocation? = null,
     val locationLoading: Boolean = false,
-    val message: String? = null,
+    val feedback: EvidenceFeedback? = null,
 )

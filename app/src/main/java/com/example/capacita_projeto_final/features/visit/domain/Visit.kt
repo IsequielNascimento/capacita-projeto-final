@@ -11,5 +11,5 @@ data class Visit(
     val latitude: Double?,
     val longitude: Double?,
     val capturedAt: Long,
-    val syncStatus: String,
+    val syncStatus: SyncStatus,
 )

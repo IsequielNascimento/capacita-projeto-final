@@ -1,40 +1,42 @@
 package com.example.capacita_projeto_final.features.route.presentation
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
-import com.example.capacita_projeto_final.features.sync.presentation.SyncPanel
+import com.example.capacita_projeto_final.features.sync.presentation.SyncSection
 import com.example.capacita_projeto_final.features.sync.presentation.SyncUiState
 import com.example.capacita_projeto_final.features.visit.domain.Visit
-import com.example.capacita_projeto_final.ui.theme.Muted
-import com.example.capacita_projeto_final.ui.theme.Navy
-import com.example.capacita_projeto_final.ui.theme.Success
+import com.example.capacita_projeto_final.ui.components.HigDisclosureIndicator
+import com.example.capacita_projeto_final.ui.components.HigLargeTitle
+import com.example.capacita_projeto_final.ui.components.HigListSection
+import com.example.capacita_projeto_final.ui.components.HigNavigationBar
+import com.example.capacita_projeto_final.ui.components.HigRow
+import com.example.capacita_projeto_final.ui.components.HigRowSeparator
+import com.example.capacita_projeto_final.ui.components.rememberLargeTitleCollapsed
+import com.example.capacita_projeto_final.ui.theme.HigMetrics
+import com.example.capacita_projeto_final.ui.theme.HigShapes
+import com.example.capacita_projeto_final.ui.theme.HigTheme
 
 @Composable
 fun RouteScreen(
@@ -44,32 +46,25 @@ fun RouteScreen(
     onOpenMap: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = { RouteHeader() },
-    ) { contentPadding ->
+    val colors = HigTheme.colors
+    val listState = rememberLazyListState()
+    val collapsed = rememberLargeTitleCollapsed(listState)
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(colors.groupedBackground),
+    ) {
+        HigNavigationBar(
+            title = "Rota",
+            showsInlineTitle = collapsed,
+            showsSeparator = collapsed,
+        )
         when (state) {
-            RouteUiState.Loading -> Column(
-                modifier = Modifier.fillMaxSize().padding(contentPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                CircularProgressIndicator()
-                Spacer(Modifier.height(16.dp))
-                Text("Carregando rota local")
-            }
-
-            is RouteUiState.Error -> Column(
-                modifier = Modifier.fillMaxSize().padding(contentPadding).padding(24.dp),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text("Rota indisponível", style = MaterialTheme.typography.headlineSmall)
-                Spacer(Modifier.height(8.dp))
-                Text(state.message, color = Muted)
-            }
-
+            RouteUiState.Loading -> LoadingContent("Carregando a rota")
+            is RouteUiState.Error -> MessageContent(title = "Rota indisponível", message = state.message)
             is RouteUiState.Ready -> RouteContent(
-                modifier = Modifier.padding(contentPadding),
+                listState = listState,
                 points = state.points,
                 latestVisits = state.latestVisits,
                 syncState = syncState,
@@ -82,36 +77,8 @@ fun RouteScreen(
 }
 
 @Composable
-private fun RouteHeader() {
-    Surface(color = Navy) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = "ROTA DE CAMPO",
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = "Capacita Aldeota",
-                color = MaterialTheme.colorScheme.onPrimary,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(
-                text = "CAPACITA-ALDEOTA-001",
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.72f),
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
-    }
-}
-
-@Composable
 private fun RouteContent(
-    modifier: Modifier,
+    listState: androidx.compose.foundation.lazy.LazyListState,
     points: List<RoutePoint>,
     latestVisits: Map<Int, Visit>,
     syncState: SyncUiState,
@@ -120,116 +87,134 @@ private fun RouteContent(
     onPointClick: (Int) -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        contentPadding = PaddingValues(
+            start = HigMetrics.contentMargin,
+            end = HigMetrics.contentMargin,
+            bottom = HigMetrics.groupSpacing,
+        ),
+        verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
     ) {
-        item { RouteSummary(pointCount = points.size, onOpenMap = onOpenMap) }
-        item { SyncPanel(state = syncState, onSync = onSync) }
         item {
-            Text(
-                modifier = Modifier.padding(top = 8.dp),
-                text = "PONTOS DE ATENDIMENTO",
-                color = Muted,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            HigLargeTitle(text = "Rota", subtitle = "Aldeota · Fortaleza")
         }
-        items(points, key = RoutePoint::id) { point ->
-            RoutePointCard(
-                point = point,
-                visit = latestVisits[point.id],
-                onClick = { onPointClick(point.id) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun RouteSummary(pointCount: Int, onOpenMap: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenMap),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(20.dp),
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                Text("Cobertura da rota", color = Muted)
-                Text(
-                    text = "$pointCount pontos",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("Aldeota", fontWeight = FontWeight.SemiBold)
-                Text("Fortaleza · CE", color = Muted)
-                Row(verticalAlignment = Alignment.CenterVertically) {
+        item {
+            HigListSection {
+                HigRow {
+                    Text("Pontos", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                    Box(Modifier.weight(1f))
                     Text(
-                        text = "Ver mapa",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
+                        text = points.size.toString(),
+                        style = HigTheme.typography.body,
+                        color = HigTheme.colors.secondaryLabel,
                     )
-                    Icon(
-                        modifier = Modifier.height(24.dp),
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                }
+                HigRowSeparator()
+                HigRow {
+                    Text("Visitados", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                    Box(Modifier.weight(1f))
+                    Text(
+                        text = latestVisits.size.toString(),
+                        style = HigTheme.typography.body,
+                        color = HigTheme.colors.secondaryLabel,
+                    )
+                }
+                HigRowSeparator()
+                HigRow(onClick = onOpenMap, onClickLabel = "Abrir o mapa da rota") {
+                    Text("Mapa da rota", style = HigTheme.typography.body, color = HigTheme.colors.label)
+                    Box(Modifier.weight(1f))
+                    HigDisclosureIndicator()
+                }
+            }
+        }
+        item {
+            SyncSection(state = syncState, onSync = onSync)
+        }
+        item {
+            HigListSection(header = "Pontos de atendimento") {
+                points.forEachIndexed { index, point ->
+                    if (index > 0) HigRowSeparator(startInset = 60.dp)
+                    RoutePointRow(
+                        point = point,
+                        visit = latestVisits[point.id],
+                        onClick = { onPointClick(point.id) },
                     )
                 }
             }
         }
+        item { Spacer(Modifier.height(HigMetrics.elementSpacing)) }
     }
 }
 
 @Composable
-private fun RoutePointCard(point: RoutePoint, visit: Visit?, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Row(
-            modifier = Modifier.padding(18.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.Top,
-        ) {
-            Surface(color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(12.dp)) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 13.dp, vertical = 10.dp),
-                    text = point.order.toString(),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(point.customer, fontWeight = FontWeight.Bold)
-                Text(point.installationCode, color = MaterialTheme.colorScheme.primary)
-                Text(point.referencePoint, color = Muted)
-                Text(point.address, color = Muted, style = MaterialTheme.typography.bodySmall)
-                if (visit != null) {
-                    Text(
-                        text = "Visitado · ${visit.syncStatus}",
-                        color = Success,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-            }
-            Icon(
-                modifier = Modifier.height(24.dp),
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = Muted,
-            )
+private fun RoutePointRow(point: RoutePoint, visit: Visit?, onClick: () -> Unit) {
+    val colors = HigTheme.colors
+    HigRow(onClick = onClick, onClickLabel = "Abrir os detalhes do ponto") {
+        OrderBadge(order = point.order, visited = visit != null)
+        Column(Modifier.weight(1f)) {
+            Text(point.customer, style = HigTheme.typography.body, color = colors.label)
+            Text(point.referencePoint, style = HigTheme.typography.footnote, color = colors.secondaryLabel)
+            Text(point.address, style = HigTheme.typography.caption1, color = colors.secondaryLabel)
         }
+        HigDisclosureIndicator()
+    }
+}
+
+@Composable
+private fun OrderBadge(order: Int, visited: Boolean) {
+    val colors = HigTheme.colors
+    val background = if (visited) colors.successFill else colors.accentFill
+    val foreground = if (visited) colors.onSuccessFill else colors.onAccentFill
+    Box(
+        modifier = Modifier
+            .defaultMinSize(minWidth = 28.dp, minHeight = 28.dp)
+            .clip(HigShapes.badge)
+            .background(background),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+            text = order.toString(),
+            style = HigTheme.typography.footnoteEmphasized,
+            color = foreground,
+        )
+    }
+}
+
+@Composable
+internal fun LoadingContent(label: String) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        CircularProgressIndicator(color = HigTheme.colors.accent)
+        Spacer(Modifier.height(HigMetrics.contentMargin))
+        Text(label, style = HigTheme.typography.subheadline, color = HigTheme.colors.secondaryLabel)
+    }
+}
+
+@Composable
+internal fun MessageContent(title: String, message: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            modifier = Modifier.semantics { heading() },
+            text = title,
+            style = HigTheme.typography.title3,
+            color = HigTheme.colors.label,
+        )
+        Spacer(Modifier.height(HigMetrics.elementSpacing))
+        Text(
+            text = message,
+            style = HigTheme.typography.subheadline,
+            color = HigTheme.colors.secondaryLabel,
+        )
     }
 }

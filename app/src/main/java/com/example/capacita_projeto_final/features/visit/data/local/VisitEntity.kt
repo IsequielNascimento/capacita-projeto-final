@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.capacita_projeto_final.features.route.data.local.RoutePointEntity
+import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 
 @Entity(
@@ -43,6 +44,6 @@ data class VisitEntity(
         latitude = latitude,
         longitude = longitude,
         capturedAt = capturedAt,
-        syncStatus = syncStatus,
+        syncStatus = SyncStatus.fromStorage(syncStatus),
     )
 }

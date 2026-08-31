@@ -116,7 +116,7 @@ fun CapacitaApp(appContainer: AppContainer) {
                 onBack = navController::popBackStack,
                 onSave = visitViewModel::saveVisit,
                 onPhotoCaptured = visitViewModel::confirmPhoto,
-                onEvidenceMessage = visitViewModel::reportEvidenceMessage,
+                onEvidenceMessage = visitViewModel::reportEvidenceFeedback,
                 onCaptureLocation = visitViewModel::captureLocation,
                 onFinish = {
                     navController.popBackStack(RouteDestination, inclusive = false)
