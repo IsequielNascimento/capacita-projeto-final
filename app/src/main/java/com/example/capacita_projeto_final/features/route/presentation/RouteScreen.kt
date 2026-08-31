@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
+import com.example.capacita_projeto_final.features.sync.presentation.SyncPanel
+import com.example.capacita_projeto_final.features.sync.presentation.SyncUiState
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.ui.theme.Muted
 import com.example.capacita_projeto_final.ui.theme.Navy
@@ -34,6 +36,8 @@ import com.example.capacita_projeto_final.ui.theme.Success
 @Composable
 fun RouteScreen(
     state: RouteUiState,
+    syncState: SyncUiState,
+    onSync: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
     Scaffold(
@@ -64,6 +68,8 @@ fun RouteScreen(
                 modifier = Modifier.padding(contentPadding),
                 points = state.points,
                 latestVisits = state.latestVisits,
+                syncState = syncState,
+                onSync = onSync,
                 onPointClick = onPointClick,
             )
         }
@@ -103,6 +109,8 @@ private fun RouteContent(
     modifier: Modifier,
     points: List<RoutePoint>,
     latestVisits: Map<Int, Visit>,
+    syncState: SyncUiState,
+    onSync: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -111,6 +119,7 @@ private fun RouteContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item { RouteSummary(points.size) }
+        item { SyncPanel(state = syncState, onSync = onSync) }
         item {
             Text(
                 modifier = Modifier.padding(top = 8.dp),

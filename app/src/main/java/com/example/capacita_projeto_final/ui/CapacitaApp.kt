@@ -15,6 +15,7 @@ import com.example.capacita_projeto_final.features.point.presentation.PointDetai
 import com.example.capacita_projeto_final.features.point.presentation.PointDetailViewModel
 import com.example.capacita_projeto_final.features.route.presentation.RouteScreen
 import com.example.capacita_projeto_final.features.route.presentation.RouteViewModel
+import com.example.capacita_projeto_final.features.sync.presentation.SyncViewModel
 import com.example.capacita_projeto_final.features.visit.presentation.VisitScreen
 import com.example.capacita_projeto_final.features.visit.presentation.VisitViewModel
 
@@ -33,9 +34,17 @@ fun CapacitaApp(appContainer: AppContainer) {
                     RouteViewModel(appContainer.routeRepository, appContainer.visitRepository)
                 },
             )
+            val syncViewModel: SyncViewModel = viewModel(
+                factory = ViewModelFactory {
+                    SyncViewModel(appContainer.visitRepository, appContainer.syncRepository)
+                },
+            )
             val state by routeViewModel.uiState.collectAsStateWithLifecycle()
+            val syncState by syncViewModel.uiState.collectAsStateWithLifecycle()
             RouteScreen(
                 state = state,
+                syncState = syncState,
+                onSync = syncViewModel::synchronize,
                 onPointClick = { pointId -> navController.navigate("point/$pointId") },
             )
         }
