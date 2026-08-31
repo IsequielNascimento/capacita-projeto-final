@@ -66,6 +66,7 @@ data class HigColorScheme(
     val fill: Color,
     val mapBackground: Color,
     val mapStreet: Color,
+    val scrim: Color,
     val isDark: Boolean,
 )
 
@@ -89,6 +90,7 @@ val LightHigColorScheme = HigColorScheme(
     fill = FillLight,
     mapBackground = GroupedBackgroundLight,
     mapStreet = Color(0xFF8A8A8E),
+    scrim = Color(0x66000000),
     isDark = false,
 )
 
@@ -112,5 +114,6 @@ val DarkHigColorScheme = HigColorScheme(
     fill = FillDark,
     mapBackground = SecondaryGroupedBackgroundDark,
     mapStreet = Color(0xFF6E6E73),
+    scrim = Color(0x99000000),
     isDark = true,
 )

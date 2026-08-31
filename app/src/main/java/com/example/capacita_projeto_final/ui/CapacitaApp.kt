@@ -1,5 +1,7 @@
 package com.example.capacita_projeto_final.ui
 
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -116,6 +118,10 @@ fun CapacitaApp(appContainer: AppContainer) {
                         navArgument("pointId") { type = NavType.IntType },
                         navArgument("reading") { type = NavType.IntType },
                     ),
+                    enterTransition = { slideInVertically(initialOffsetY = { it }) },
+                    exitTransition = { slideOutVertically(targetOffsetY = { it }) },
+                    popEnterTransition = { slideInVertically(initialOffsetY = { it }) },
+                    popExitTransition = { slideOutVertically(targetOffsetY = { it }) },
                 ) { entry ->
                     val pointId = entry.arguments?.getInt("pointId") ?: return@composable
                     val reading = entry.arguments?.getInt("reading") ?: return@composable
@@ -133,7 +139,7 @@ fun CapacitaApp(appContainer: AppContainer) {
                     val visitState by visitViewModel.uiState.collectAsStateWithLifecycle()
                     VisitScreen(
                         state = visitState,
-                        onBack = coordinator::dismissVisit,
+                        onDismiss = coordinator::dismissVisit,
                         onSave = visitViewModel::saveVisit,
                         onPhotoCaptured = visitViewModel::confirmPhoto,
                         onEvidenceMessage = visitViewModel::reportEvidenceFeedback,

@@ -138,11 +138,13 @@ fun HigPlainButton(
     modifier: Modifier = Modifier,
     tint: Color? = null,
     emphasized: Boolean = false,
+    enabled: Boolean = true,
 ) {
     Text(
         modifier = modifier
             .clip(HigShapes.badge)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .alpha(if (enabled) 1f else 0.4f)
             .defaultMinSize(minHeight = HigMetrics.minimumTouchTarget)
             .padding(horizontal = 8.dp, vertical = 12.dp),
         text = title,

@@ -3,6 +3,7 @@ package com.example.capacita_projeto_final.features.visit.presentation
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -26,12 +27,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.capacita_projeto_final.features.route.presentation.LoadingContent
 import com.example.capacita_projeto_final.features.route.presentation.MessageContent
 import com.example.capacita_projeto_final.features.visit.infrastructure.PhotoEvidenceStore
+import com.example.capacita_projeto_final.ui.components.HigAction
+import com.example.capacita_projeto_final.ui.components.HigActionSheet
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
 import com.example.capacita_projeto_final.ui.components.HigCameraSymbol
 import com.example.capacita_projeto_final.ui.components.HigCheckmark
@@ -39,18 +43,21 @@ import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigLocationSymbol
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
+import com.example.capacita_projeto_final.ui.components.HigPlainButton
 import com.example.capacita_projeto_final.ui.components.HigProminentButton
 import com.example.capacita_projeto_final.ui.components.HigRow
 import com.example.capacita_projeto_final.ui.components.HigRowSeparator
+import com.example.capacita_projeto_final.ui.components.HigSheetGrabber
 import com.example.capacita_projeto_final.ui.components.HigValueRow
 import com.example.capacita_projeto_final.ui.components.rememberLargeTitleCollapsed
 import com.example.capacita_projeto_final.ui.theme.HigMetrics
+import com.example.capacita_projeto_final.ui.theme.HigShapes
 import com.example.capacita_projeto_final.ui.theme.HigTheme
 
 @Composable
 fun VisitScreen(
     state: VisitUiState,
-    onBack: () -> Unit,
+    onDismiss: () -> Unit,
     onSave: () -> Unit,
     onFinish: () -> Unit,
     onPhotoCaptured: (String?) -> Unit,
@@ -63,6 +70,13 @@ fun VisitScreen(
     val collapsed = rememberLargeTitleCollapsed(listState)
 
     var pendingPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var confirmingDiscard by remember { mutableStateOf(false) }
+
+    val readyState = state as? VisitUiState.Ready
+    val requestDismiss = {
+        if (readyState?.hasUnsavedEvidence == true) confirmingDiscard = true else onDismiss()
+    }
+    BackHandler(enabled = state !is VisitUiState.Saved, onBack = requestDismiss)
     val takePhotoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { captured ->
         onPhotoCaptured(pendingPhotoUri?.toString()?.takeIf { captured })
     }
@@ -120,15 +134,36 @@ fun VisitScreen(
     Column(
         Modifier
             .fillMaxSize()
+            .background(colors.scrim)
+            .padding(top = 10.dp)
+            .clip(HigShapes.sheet)
             .background(colors.groupedBackground),
     ) {
+        HigSheetGrabber()
         HigNavigationBar(
             title = stringResource(R.string.visit_title),
-            backTitle = stringResource(R.string.point_title_fallback),
-            backAccessibilityLabel = stringResource(R.string.visit_back_label),
-            onBack = onBack,
             showsInlineTitle = collapsed,
             showsSeparator = collapsed,
+            leading = if (state is VisitUiState.Saved) {
+                null
+            } else {
+                {
+                    HigPlainButton(
+                        title = stringResource(R.string.action_cancel),
+                        onClick = requestDismiss,
+                    )
+                }
+            },
+            trailing = readyState?.let { ready ->
+                {
+                    HigPlainButton(
+                        title = stringResource(R.string.action_save),
+                        onClick = onSave,
+                        emphasized = true,
+                        enabled = !ready.saving,
+                    )
+                }
+            },
         )
         when (state) {
             VisitUiState.Loading -> LoadingContent(stringResource(R.string.visit_loading))
@@ -147,6 +182,25 @@ fun VisitScreen(
 
             is VisitUiState.Saved -> SavedContent(state = state, onFinish = onFinish)
         }
+    }
+
+    if (confirmingDiscard) {
+        HigActionSheet(
+            title = stringResource(R.string.visit_discard_title),
+            message = stringResource(R.string.visit_discard_message),
+            actions = listOf(
+                HigAction(
+                    title = stringResource(R.string.action_discard),
+                    destructive = true,
+                    onSelect = {
+                        confirmingDiscard = false
+                        onDismiss()
+                    },
+                ),
+            ),
+            cancelTitle = stringResource(R.string.visit_keep_editing),
+            onDismissRequest = { confirmingDiscard = false },
+        )
     }
 }
 
@@ -196,14 +250,6 @@ private fun ReadyContent(
                 state = state,
                 onTakePhoto = onTakePhoto,
                 onGetLocation = onGetLocation,
-            )
-        }
-        item {
-            HigProminentButton(
-                title = stringResource(R.string.visit_save),
-                onClick = onSave,
-                inProgress = state.saving,
-                progressLabel = stringResource(R.string.visit_saving),
             )
         }
         item { Spacer(Modifier.height(HigMetrics.elementSpacing)) }

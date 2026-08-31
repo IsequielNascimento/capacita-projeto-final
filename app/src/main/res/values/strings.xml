@@ -88,6 +88,9 @@
     <string name="visit_customer">Cliente</string>
     <string name="visit_reading">Leitura</string>
     <string name="visit_coordinate_format">%1$s, %2$s</string>
+    <string name="visit_discard_title">Descartar este registro?</string>
+    <string name="visit_discard_message">A foto e a localização capturadas serão perdidas.</string>
+    <string name="visit_keep_editing">Continuar preenchendo</string>
 
     <string name="evidence_photo_attached">Foto anexada à visita.</string>
     <string name="evidence_photo_not_captured">A foto não foi salva. Tente novamente.</string>
