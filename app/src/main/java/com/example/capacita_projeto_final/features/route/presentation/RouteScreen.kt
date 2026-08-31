@@ -26,8 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
+import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.ui.theme.Muted
 import com.example.capacita_projeto_final.ui.theme.Navy
+import com.example.capacita_projeto_final.ui.theme.Success
 
 @Composable
 fun RouteScreen(
@@ -61,6 +63,7 @@ fun RouteScreen(
             is RouteUiState.Ready -> RouteContent(
                 modifier = Modifier.padding(contentPadding),
                 points = state.points,
+                latestVisits = state.latestVisits,
                 onPointClick = onPointClick,
             )
         }
@@ -99,6 +102,7 @@ private fun RouteHeader() {
 private fun RouteContent(
     modifier: Modifier,
     points: List<RoutePoint>,
+    latestVisits: Map<Int, Visit>,
     onPointClick: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -117,7 +121,11 @@ private fun RouteContent(
             )
         }
         items(points, key = RoutePoint::id) { point ->
-            RoutePointCard(point = point, onClick = { onPointClick(point.id) })
+            RoutePointCard(
+                point = point,
+                visit = latestVisits[point.id],
+                onClick = { onPointClick(point.id) },
+            )
         }
     }
 }
@@ -150,7 +158,7 @@ private fun RouteSummary(pointCount: Int) {
 }
 
 @Composable
-private fun RoutePointCard(point: RoutePoint, onClick: () -> Unit) {
+private fun RoutePointCard(point: RoutePoint, visit: Visit?, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -177,6 +185,14 @@ private fun RoutePointCard(point: RoutePoint, onClick: () -> Unit) {
                 Text(point.installationCode, color = MaterialTheme.colorScheme.primary)
                 Text(point.referencePoint, color = Muted)
                 Text(point.address, color = Muted, style = MaterialTheme.typography.bodySmall)
+                if (visit != null) {
+                    Text(
+                        text = "Visitado · ${visit.syncStatus}",
+                        color = Success,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
             Text("›", style = MaterialTheme.typography.headlineSmall, color = Muted)
         }
