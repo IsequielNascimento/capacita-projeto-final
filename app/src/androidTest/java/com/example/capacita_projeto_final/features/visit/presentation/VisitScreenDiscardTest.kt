@@ -2,6 +2,7 @@ package com.example.capacita_projeto_final.features.visit.presentation
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
@@ -32,7 +33,7 @@ class VisitScreenDiscardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Cancelar").performClick()
+        composeTestRule.onNodeWithContentDescription("Cancelar").performClick()
 
         composeTestRule.onNodeWithText("Descartar este registro?").assertIsDisplayed()
         assertFalse("evidence was discarded without confirmation", dismissed)
@@ -58,7 +59,7 @@ class VisitScreenDiscardTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Cancelar").performClick()
+        composeTestRule.onNodeWithContentDescription("Cancelar").performClick()
 
         assertTrue("cancelling an empty form should close the sheet", dismissed)
     }

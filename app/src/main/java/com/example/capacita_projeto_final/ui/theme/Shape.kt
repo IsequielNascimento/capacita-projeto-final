@@ -12,7 +12,6 @@ object HigRadius {
     val group: Dp = 10.dp
     val control: Dp = 10.dp
     val alert: Dp = 14.dp
-    val sheet: Dp = 14.dp
     val badge: Dp = 6.dp
 }
 
@@ -21,7 +20,6 @@ object HigShapes {
     val group = RoundedCornerShape(HigRadius.group)
     val control = RoundedCornerShape(HigRadius.control)
     val alert = RoundedCornerShape(HigRadius.alert)
-    val sheet = RoundedCornerShape(topStart = HigRadius.sheet, topEnd = HigRadius.sheet)
     val badge = RoundedCornerShape(HigRadius.badge)
 }
 

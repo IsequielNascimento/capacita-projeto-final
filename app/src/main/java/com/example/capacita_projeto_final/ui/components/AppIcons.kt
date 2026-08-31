@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.MyLocation
@@ -22,6 +23,7 @@ object AppIcons {
     val Upload: ImageVector = Icons.Filled.CloudUpload
     val Camera: ImageVector = Icons.Filled.PhotoCamera
     val Location: ImageVector = Icons.Filled.MyLocation
+    val Close: ImageVector = Icons.Filled.Close
     val Check: ImageVector = Icons.Filled.Check
     val CheckCircle: ImageVector = Icons.Filled.CheckCircle
 }

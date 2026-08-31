@@ -53,7 +53,7 @@ fun HigActionSheet(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f))
+                .background(colors.scrim)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -151,4 +153,33 @@ fun HigPlainButton(
         style = if (emphasized) HigTheme.typography.bodyEmphasized else HigTheme.typography.body,
         color = tint ?: HigTheme.colors.accent,
     )
+}
+
+// MARK: - Icon button
+
+@Composable
+fun HigIconButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    tint: Color? = null,
+) {
+    Box(
+        modifier = modifier
+            .clip(HigShapes.badge)
+            .clickable(role = Role.Button, onClick = onClick)
+            .defaultMinSize(
+                minWidth = HigMetrics.minimumTouchTarget,
+                minHeight = HigMetrics.minimumTouchTarget,
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            modifier = Modifier.size(24.dp),
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = tint ?: HigTheme.colors.accent,
+        )
+    }
 }

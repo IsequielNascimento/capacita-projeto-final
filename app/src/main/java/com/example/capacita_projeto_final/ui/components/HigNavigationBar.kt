@@ -59,6 +59,7 @@ fun HigNavigationBar(
     trailing: (@Composable () -> Unit)? = null,
     showsInlineTitle: Boolean = true,
     showsSeparator: Boolean = true,
+    centerTitle: Boolean = true,
 ) {
     val colors = HigTheme.colors
     val titleAlpha by animateFloatAsState(
@@ -81,18 +82,20 @@ fun HigNavigationBar(
                 .fillMaxWidth()
                 .height(HigMetrics.barHeight),
         ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .widthIn(max = 200.dp)
-                    .alpha(titleAlpha)
-                    .semantics { heading() },
-                text = title,
-                style = HigTheme.typography.headline,
-                color = colors.label,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            if (centerTitle) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .widthIn(max = 200.dp)
+                        .alpha(titleAlpha)
+                        .semantics { heading() },
+                    text = title,
+                    style = HigTheme.typography.headline,
+                    color = colors.label,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Row(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
@@ -107,6 +110,19 @@ fun HigNavigationBar(
                     )
                 }
                 leading?.invoke()
+                if (!centerTitle) {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .widthIn(max = 240.dp)
+                            .semantics { heading() },
+                        text = title,
+                        style = HigTheme.typography.title3,
+                        color = colors.label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
             Row(
                 modifier = Modifier

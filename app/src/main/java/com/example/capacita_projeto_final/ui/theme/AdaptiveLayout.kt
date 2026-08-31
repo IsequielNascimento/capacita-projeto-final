@@ -20,15 +20,18 @@ fun higWidthClass(): HigWidthClass =
 private val ReadableContentWidth = 640.dp
 
 @Composable
-fun rememberReadableContentPadding(bottom: Dp = HigMetrics.groupSpacing): PaddingValues {
+fun rememberReadableContentPadding(
+    top: Dp = 0.dp,
+    bottom: Dp = HigMetrics.groupSpacing,
+): PaddingValues {
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    return remember(screenWidth, bottom) {
+    return remember(screenWidth, top, bottom) {
         val horizontal = if (screenWidth > ReadableContentWidth) {
             (screenWidth - ReadableContentWidth) / 2 + HigMetrics.contentMargin
         } else {
             HigMetrics.contentMargin
         }
-        PaddingValues(start = horizontal, end = horizontal, bottom = bottom)
+        PaddingValues(start = horizontal, top = top, end = horizontal, bottom = bottom)
     }
 }
 

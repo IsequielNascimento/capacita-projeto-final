@@ -26,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,18 +42,15 @@ import com.example.capacita_projeto_final.ui.components.HigBorderedButton
 import com.example.capacita_projeto_final.ui.components.AppIcons
 import com.example.capacita_projeto_final.ui.components.HigHapticFeedback
 import com.example.capacita_projeto_final.ui.components.HigHapticOutcome
-import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
+import com.example.capacita_projeto_final.ui.components.HigIconButton
 import com.example.capacita_projeto_final.ui.components.HigPlainButton
 import com.example.capacita_projeto_final.ui.components.HigProminentButton
 import com.example.capacita_projeto_final.ui.components.HigRow
 import com.example.capacita_projeto_final.ui.components.HigRowSeparator
-import com.example.capacita_projeto_final.ui.components.HigSheetGrabber
 import com.example.capacita_projeto_final.ui.components.HigValueRow
-import com.example.capacita_projeto_final.ui.components.rememberLargeTitleCollapsed
 import com.example.capacita_projeto_final.ui.theme.HigMetrics
-import com.example.capacita_projeto_final.ui.theme.HigShapes
 import com.example.capacita_projeto_final.ui.theme.HigTheme
 import com.example.capacita_projeto_final.ui.theme.rememberReadableContentPadding
 
@@ -71,7 +67,6 @@ fun VisitScreen(
     val context = LocalContext.current
     val colors = HigTheme.colors
     val listState = rememberLazyListState()
-    val collapsed = rememberLargeTitleCollapsed(listState)
 
     var pendingPhotoUri by remember { mutableStateOf<Uri?>(null) }
     var confirmingDiscard by remember { mutableStateOf(false) }
@@ -153,22 +148,19 @@ fun VisitScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(colors.scrim)
-            .padding(top = 10.dp)
-            .clip(HigShapes.sheet)
             .background(colors.groupedBackground),
     ) {
-        HigSheetGrabber()
         HigNavigationBar(
             title = stringResource(R.string.visit_title),
-            showsInlineTitle = collapsed,
-            showsSeparator = collapsed,
+            centerTitle = false,
+            showsSeparator = true,
             leading = if (state is VisitUiState.Saved) {
                 null
             } else {
                 {
-                    HigPlainButton(
-                        title = stringResource(R.string.action_cancel),
+                    HigIconButton(
+                        icon = AppIcons.Close,
+                        contentDescription = stringResource(R.string.action_cancel),
                         onClick = requestDismiss,
                     )
                 }
@@ -273,14 +265,13 @@ private fun ReadyContent(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = rememberReadableContentPadding(),
+        contentPadding = rememberReadableContentPadding(top = HigMetrics.groupSpacing),
         verticalArrangement = Arrangement.spacedBy(HigMetrics.groupSpacing),
     ) {
         item {
-            HigLargeTitle(text = stringResource(R.string.visit_title), subtitle = state.point.customer)
-        }
-        item {
             HigListSection(header = stringResource(R.string.visit_reading_header)) {
+                HigValueRow(stringResource(R.string.visit_customer), state.point.customer)
+                HigRowSeparator()
                 HigValueRow(stringResource(R.string.point_installation), state.point.installationCode)
                 HigRowSeparator()
                 HigValueRow(stringResource(R.string.point_meter), state.point.meterNumber)
