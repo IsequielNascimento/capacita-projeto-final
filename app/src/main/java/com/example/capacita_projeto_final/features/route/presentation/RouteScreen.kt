@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.ui.components.HigDisclosureIndicator
+import com.example.capacita_projeto_final.ui.components.HigEmptyState
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
@@ -140,7 +141,15 @@ private fun RouteContent(
                 }
             }
         }
-        item {
+        if (points.isEmpty()) {
+            item {
+                HigEmptyState(
+                    title = stringResource(R.string.route_empty_title),
+                    message = stringResource(R.string.route_empty_message),
+                )
+            }
+        }
+        if (points.isNotEmpty()) item {
             HigListSection(header = stringResource(R.string.route_points_header)) {
                 points.forEachIndexed { index, point ->
                     if (index > 0) HigRowSeparator(startInset = 60.dp)

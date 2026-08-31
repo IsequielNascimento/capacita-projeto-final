@@ -20,6 +20,8 @@ import com.example.capacita_projeto_final.features.visit.domain.SyncStatus
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.features.visit.presentation.readableLabel
 import com.example.capacita_projeto_final.ui.components.HigEmptyState
+import com.example.capacita_projeto_final.ui.components.HigHapticFeedback
+import com.example.capacita_projeto_final.ui.components.HigHapticOutcome
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
@@ -36,6 +38,13 @@ fun SyncScreen(state: SyncUiState, onSync: () -> Unit) {
     val colors = HigTheme.colors
     val listState = rememberLazyListState()
     val collapsed = rememberLargeTitleCollapsed(listState)
+
+    HigHapticFeedback(
+        outcome = state.feedback?.let { feedback ->
+            if (state.failed) HigHapticOutcome.Failure else HigHapticOutcome.Success
+        },
+        key = state.feedback,
+    )
 
     Column(
         Modifier

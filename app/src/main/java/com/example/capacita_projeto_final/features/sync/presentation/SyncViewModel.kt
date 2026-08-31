@@ -22,6 +22,11 @@ sealed interface SyncFeedback {
     data object ServiceUnavailable : SyncFeedback
 }
 
+data class SyncProgress(val completed: Int, val total: Int) {
+    val fraction: Float
+        get() = if (total <= 0) 0f else completed.toFloat() / total.toFloat()
+}
+
 data class SyncUiState(
     val pending: Int = 0,
     val synced: Int = 0,
@@ -29,6 +34,7 @@ data class SyncUiState(
     val running: Boolean = false,
     val feedback: SyncFeedback? = null,
     val visits: List<Visit> = emptyList(),
+    val progress: SyncProgress? = null,
 ) {
     val failed: Boolean
         get() = feedback is SyncFeedback.ServiceUnavailable || feedback is SyncFeedback.PartiallyFailed
@@ -42,13 +48,15 @@ class SyncViewModel(
 ) : ViewModel() {
     private val running = MutableStateFlow(false)
     private val feedback = MutableStateFlow<SyncFeedback?>(null)
+    private val progress = MutableStateFlow<SyncProgress?>(null)
 
     val uiState: StateFlow<SyncUiState> = combine(
         visitRepository.observeVisits(),
         running,
         feedback,
-    ) { visits, isRunning, currentFeedback ->
-        visits.toUiState(isRunning, currentFeedback)
+        progress,
+    ) { visits, isRunning, currentFeedback, currentProgress ->
+        visits.toUiState(isRunning, currentFeedback, currentProgress)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SyncUiState())
 
     fun synchronize() {
@@ -57,7 +65,12 @@ class SyncViewModel(
         viewModelScope.launch {
             running.value = true
             feedback.value = null
-            feedback.value = runCatching { syncRepository.synchronizePendingVisits() }
+            progress.value = null
+            feedback.value = runCatching {
+                syncRepository.synchronizePendingVisits { completed, total ->
+                    progress.value = SyncProgress(completed, total)
+                }
+            }
                 .fold(
                     onSuccess = { outcome ->
                         when {
@@ -69,15 +82,21 @@ class SyncViewModel(
                     onFailure = { SyncFeedback.ServiceUnavailable },
                 )
             running.value = false
+            progress.value = null
         }
     }
 }
 
-private fun List<Visit>.toUiState(running: Boolean, feedback: SyncFeedback?) = SyncUiState(
+private fun List<Visit>.toUiState(
+    running: Boolean,
+    feedback: SyncFeedback?,
+    progress: SyncProgress?,
+) = SyncUiState(
     pending = count { it.syncStatus == SyncStatus.Pending || it.syncStatus == SyncStatus.Sending },
     synced = count { it.syncStatus == SyncStatus.Sent },
     errors = count { it.syncStatus == SyncStatus.Failed },
     running = running,
     feedback = feedback,
     visits = this,
+    progress = progress,
 )

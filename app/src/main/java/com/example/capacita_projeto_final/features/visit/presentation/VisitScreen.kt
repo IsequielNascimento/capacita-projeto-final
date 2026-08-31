@@ -41,6 +41,8 @@ import com.example.capacita_projeto_final.ui.components.HigActionSheet
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
 import com.example.capacita_projeto_final.ui.components.HigCameraSymbol
 import com.example.capacita_projeto_final.ui.components.HigCheckmark
+import com.example.capacita_projeto_final.ui.components.HigHapticFeedback
+import com.example.capacita_projeto_final.ui.components.HigHapticOutcome
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigLocationSymbol
@@ -81,6 +83,14 @@ fun VisitScreen(
         if (readyState?.hasUnsavedEvidence == true) confirmingDiscard = true else onDismiss()
     }
     BackHandler(enabled = state !is VisitUiState.Saved, onBack = requestDismiss)
+    HigHapticFeedback(
+        outcome = when (state) {
+            is VisitUiState.Saved -> HigHapticOutcome.Success
+            is VisitUiState.Error -> HigHapticOutcome.Failure
+            else -> null
+        },
+        key = state::class,
+    )
     val takePhotoLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { captured ->
         onPhotoCaptured(pendingPhotoUri?.toString()?.takeIf { captured })
     }

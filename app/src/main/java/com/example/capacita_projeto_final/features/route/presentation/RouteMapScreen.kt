@@ -39,6 +39,7 @@ import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.route.domain.projectRoutePoints
 import com.example.capacita_projeto_final.ui.components.HigCheckmark
 import com.example.capacita_projeto_final.ui.components.HigDisclosureIndicator
+import com.example.capacita_projeto_final.ui.components.HigEmptyState
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
@@ -117,14 +118,22 @@ private fun RouteMapContent(
                 ),
             )
         }
-        item {
+        if (orderedPoints.isEmpty()) {
+            item {
+                HigEmptyState(
+                    title = stringResource(R.string.map_empty_title),
+                    message = stringResource(R.string.map_empty_message),
+                )
+            }
+        }
+        if (orderedPoints.isNotEmpty()) item {
             RouteMap(
                 points = orderedPoints,
                 visitedPointIds = visitedPointIds,
                 onPointClick = onPointClick,
             )
         }
-        item {
+        if (orderedPoints.isNotEmpty()) item {
             HigListSection(header = stringResource(R.string.map_order_header)) {
                 orderedPoints.forEachIndexed { index, point ->
                     if (index > 0) HigRowSeparator(startInset = 60.dp)

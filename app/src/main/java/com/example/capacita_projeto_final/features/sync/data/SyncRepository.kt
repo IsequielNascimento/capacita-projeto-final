@@ -16,13 +16,16 @@ class SyncRepository(
     private val api: CapacitaApi,
     private val visitRepository: VisitRepository,
 ) {
-    suspend fun synchronizePendingVisits(): SyncOutcome {
+    suspend fun synchronizePendingVisits(
+        onProgress: (completed: Int, total: Int) -> Unit = { _, _ -> },
+    ): SyncOutcome {
         val serviceStatus = api.getServiceStatus()
         val pendingVisits = visitRepository.pendingVisits()
         var synchronized = 0
         var failed = 0
 
-        pendingVisits.forEach { visit ->
+        onProgress(0, pendingVisits.size)
+        pendingVisits.forEachIndexed { index, visit ->
             visitRepository.updateSyncStatus(visit.id, SyncStatus.Sending)
             runCatching { api.sendVisit(visit.toPayload()) }
                 .onSuccess {
@@ -33,6 +36,7 @@ class SyncRepository(
                     visitRepository.updateSyncStatus(visit.id, SyncStatus.Failed)
                     failed += 1
                 }
+            onProgress(index + 1, pendingVisits.size)
         }
 
         return SyncOutcome(
