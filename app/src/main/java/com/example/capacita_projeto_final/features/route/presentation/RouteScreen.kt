@@ -26,8 +26,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
-import com.example.capacita_projeto_final.features.sync.presentation.SyncSection
-import com.example.capacita_projeto_final.features.sync.presentation.SyncUiState
 import com.example.capacita_projeto_final.features.visit.domain.Visit
 import com.example.capacita_projeto_final.ui.components.HigDisclosureIndicator
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
@@ -43,8 +41,6 @@ import com.example.capacita_projeto_final.ui.theme.HigTheme
 @Composable
 fun RouteScreen(
     state: RouteUiState,
-    syncState: SyncUiState,
-    onSync: () -> Unit,
     onOpenMap: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
@@ -72,8 +68,6 @@ fun RouteScreen(
                 listState = listState,
                 points = state.points,
                 latestVisits = state.latestVisits,
-                syncState = syncState,
-                onSync = onSync,
                 onOpenMap = onOpenMap,
                 onPointClick = onPointClick,
             )
@@ -86,8 +80,6 @@ private fun RouteContent(
     listState: androidx.compose.foundation.lazy.LazyListState,
     points: List<RoutePoint>,
     latestVisits: Map<Int, Visit>,
-    syncState: SyncUiState,
-    onSync: () -> Unit,
     onOpenMap: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
@@ -147,9 +139,6 @@ private fun RouteContent(
                     HigDisclosureIndicator()
                 }
             }
-        }
-        item {
-            SyncSection(state = syncState, onSync = onSync)
         }
         item {
             HigListSection(header = stringResource(R.string.route_points_header)) {

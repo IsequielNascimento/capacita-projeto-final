@@ -107,6 +107,16 @@
     <string name="map_marker_action">Abrir ponto %1$d, %2$s, %3$s</string>
     <string name="map_north">Norte</string>
 
+    <string name="tab_route">Rota</string>
+    <string name="tab_map">Mapa</string>
+    <string name="tab_sync">Envio</string>
+
+    <string name="sync_title">Envio</string>
+    <string name="sync_subtitle">Visitas registradas neste aparelho</string>
+    <string name="sync_history_header">Visitas registradas</string>
+    <string name="sync_empty_title">Nenhuma visita registrada</string>
+    <string name="sync_empty_message">As visitas que você registrar aparecem aqui até serem enviadas.</string>
+
     <plurals name="sync_visits_sent">
         <item quantity="one">%d visita enviada</item>
         <item quantity="other">%d visitas enviadas</item>

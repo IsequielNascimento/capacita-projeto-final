@@ -28,6 +28,7 @@ data class SyncUiState(
     val errors: Int = 0,
     val running: Boolean = false,
     val feedback: SyncFeedback? = null,
+    val visits: List<Visit> = emptyList(),
 ) {
     val failed: Boolean
         get() = feedback is SyncFeedback.ServiceUnavailable || feedback is SyncFeedback.PartiallyFailed
@@ -78,4 +79,5 @@ private fun List<Visit>.toUiState(running: Boolean, feedback: SyncFeedback?) = S
     errors = count { it.syncStatus == SyncStatus.Failed },
     running = running,
     feedback = feedback,
+    visits = this,
 )

@@ -52,8 +52,8 @@ import com.example.capacita_projeto_final.ui.theme.HigTheme
 @Composable
 fun RouteMapScreen(
     state: RouteUiState,
-    onBack: () -> Unit,
     onPointClick: (Int) -> Unit,
+    onBack: (() -> Unit)? = null,
 ) {
     val colors = HigTheme.colors
     val listState = rememberLazyListState()
@@ -66,7 +66,7 @@ fun RouteMapScreen(
     ) {
         HigNavigationBar(
             title = stringResource(R.string.map_title),
-            backTitle = stringResource(R.string.route_title),
+            backTitle = onBack?.let { stringResource(R.string.route_title) },
             backAccessibilityLabel = stringResource(R.string.point_back_label),
             onBack = onBack,
             showsInlineTitle = collapsed,
