@@ -90,6 +90,7 @@ fun CapacitaApp(appContainer: AppContainer) {
                         reading = reading,
                         routeRepository = appContainer.routeRepository,
                         visitRepository = appContainer.visitRepository,
+                        locationProvider = appContainer.deviceLocationProvider,
                     )
                 },
             )
@@ -98,6 +99,9 @@ fun CapacitaApp(appContainer: AppContainer) {
                 state = state,
                 onBack = navController::popBackStack,
                 onSave = visitViewModel::saveVisit,
+                onPhotoCaptured = visitViewModel::confirmPhoto,
+                onEvidenceMessage = visitViewModel::reportEvidenceMessage,
+                onCaptureLocation = visitViewModel::captureLocation,
                 onFinish = {
                     navController.popBackStack(RouteDestination, inclusive = false)
                 },

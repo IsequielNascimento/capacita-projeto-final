@@ -8,6 +8,7 @@ import com.example.capacita_projeto_final.features.route.data.RouteRepository
 import com.example.capacita_projeto_final.features.sync.data.SyncRepository
 import com.example.capacita_projeto_final.features.sync.data.remote.FieldOpsApi
 import com.example.capacita_projeto_final.features.visit.data.VisitRepository
+import com.example.capacita_projeto_final.features.visit.infrastructure.DeviceLocationProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -28,4 +29,5 @@ class AppContainer(context: Context) {
         .create(FieldOpsApi::class.java)
 
     val syncRepository = SyncRepository(fieldOpsApi, visitRepository)
+    val deviceLocationProvider = DeviceLocationProvider(context)
 }
