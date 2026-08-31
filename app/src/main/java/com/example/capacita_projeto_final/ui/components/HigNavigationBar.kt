@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -141,11 +143,11 @@ private fun BackControl(title: String?, accessibilityLabel: String, onBack: () -
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        HigChevron(
-            direction = HigChevronDirection.Backward,
+        Icon(
+            modifier = Modifier.size(24.dp),
+            imageVector = AppIcons.Back,
+            contentDescription = null,
             tint = colors.accent,
-            height = 17.dp,
-            strokeWidth = 2.5.dp,
         )
         if (title != null) {
             Text(

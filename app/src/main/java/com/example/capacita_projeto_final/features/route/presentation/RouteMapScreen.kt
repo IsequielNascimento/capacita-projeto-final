@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.example.capacita_projeto_final.features.route.domain.ProjectedRoutePoint
 import com.example.capacita_projeto_final.features.route.domain.RoutePoint
 import com.example.capacita_projeto_final.features.route.domain.projectRoutePoints
-import com.example.capacita_projeto_final.ui.components.HigCheckmark
+import com.example.capacita_projeto_final.ui.components.AppIcons
 import com.example.capacita_projeto_final.ui.components.HigDisclosureIndicator
 import com.example.capacita_projeto_final.ui.components.HigEmptyState
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
@@ -262,7 +263,12 @@ private fun MapMarker(
                 contentAlignment = Alignment.Center,
             ) {
                 if (visited) {
-                    HigCheckmark(tint = onFill, size = 14.dp, strokeWidth = 2.dp)
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = AppIcons.Check,
+                        contentDescription = null,
+                        tint = onFill,
+                    )
                 } else {
                     Text(
                         text = order.toString(),
@@ -308,7 +314,14 @@ private fun RouteMapPointRow(point: RoutePoint, visited: Boolean, onClick: () ->
                 color = if (visited) colors.success else colors.secondaryLabel,
             )
         }
-        if (visited) HigCheckmark(tint = colors.success, size = 15.dp)
+        if (visited) {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = AppIcons.CheckCircle,
+                contentDescription = null,
+                tint = colors.success,
+            )
+        }
         HigDisclosureIndicator()
     }
 }

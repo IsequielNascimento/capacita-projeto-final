@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,13 +40,11 @@ import com.example.capacita_projeto_final.ui.components.HigAction
 import com.example.capacita_projeto_final.ui.components.HigActionSheet
 import com.example.capacita_projeto_final.ui.components.HigAlert
 import com.example.capacita_projeto_final.ui.components.HigBorderedButton
-import com.example.capacita_projeto_final.ui.components.HigCameraSymbol
-import com.example.capacita_projeto_final.ui.components.HigCheckmark
+import com.example.capacita_projeto_final.ui.components.AppIcons
 import com.example.capacita_projeto_final.ui.components.HigHapticFeedback
 import com.example.capacita_projeto_final.ui.components.HigHapticOutcome
 import com.example.capacita_projeto_final.ui.components.HigLargeTitle
 import com.example.capacita_projeto_final.ui.components.HigListSection
-import com.example.capacita_projeto_final.ui.components.HigLocationSymbol
 import com.example.capacita_projeto_final.ui.components.HigNavigationBar
 import com.example.capacita_projeto_final.ui.components.HigPlainButton
 import com.example.capacita_projeto_final.ui.components.HigProminentButton
@@ -339,7 +339,14 @@ private fun EvidenceSection(
                     if (state.photoUri == null) R.string.visit_take_photo else R.string.visit_retake_photo,
                 ),
                 onClick = onTakePhoto,
-                leading = { HigCameraSymbol(tint = colors.accent, size = 20.dp) },
+                leading = {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        imageVector = AppIcons.Camera,
+                        contentDescription = null,
+                        tint = colors.accent,
+                    )
+                },
             )
         }
         HigRowSeparator()
@@ -365,7 +372,14 @@ private fun EvidenceSection(
                 onClick = onGetLocation,
                 inProgress = state.locationLoading,
                 progressLabel = stringResource(R.string.visit_location_in_progress),
-                leading = { HigLocationSymbol(tint = colors.accent, size = 20.dp) },
+                leading = {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        imageVector = AppIcons.Location,
+                        contentDescription = null,
+                        tint = colors.accent,
+                    )
+                },
             )
         }
     }
@@ -382,7 +396,14 @@ private fun EvidenceRow(label: String, value: String, captured: Boolean) {
             style = HigTheme.typography.subheadline,
             color = if (captured) colors.success else colors.secondaryLabel,
         )
-        if (captured) HigCheckmark(tint = colors.success, size = 15.dp)
+        if (captured) {
+            Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = AppIcons.CheckCircle,
+                contentDescription = null,
+                tint = colors.success,
+            )
+        }
     }
 }
 

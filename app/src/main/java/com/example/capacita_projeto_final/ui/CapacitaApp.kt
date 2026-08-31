@@ -34,9 +34,7 @@ import com.example.capacita_projeto_final.features.visit.presentation.VisitViewM
 import com.example.capacita_projeto_final.navigation.AppRoute
 import com.example.capacita_projeto_final.navigation.AppTab
 import com.example.capacita_projeto_final.navigation.rememberAppCoordinator
-import com.example.capacita_projeto_final.ui.components.HigListBulletSymbol
-import com.example.capacita_projeto_final.ui.components.HigMapSymbol
-import com.example.capacita_projeto_final.ui.components.HigSyncSymbol
+import com.example.capacita_projeto_final.ui.components.AppIcons
 import com.example.capacita_projeto_final.ui.components.HigTabBar
 import com.example.capacita_projeto_final.ui.components.HigTabItem
 
@@ -66,9 +64,9 @@ fun CapacitaApp(appContainer: AppContainer) {
     val showsTabBar = currentRoute != AppRoute.VisitSheet
 
     val tabItems = listOf(
-        HigTabItem(AppTab.Route.name, stringResource(R.string.tab_route)) { HigListBulletSymbol(it) },
-        HigTabItem(AppTab.Map.name, stringResource(R.string.tab_map)) { HigMapSymbol(it) },
-        HigTabItem(AppTab.Sync.name, stringResource(R.string.tab_sync)) { HigSyncSymbol(it) },
+        HigTabItem(AppTab.Route.name, stringResource(R.string.tab_route), AppIcons.Route),
+        HigTabItem(AppTab.Map.name, stringResource(R.string.tab_map), AppIcons.Map),
+        HigTabItem(AppTab.Sync.name, stringResource(R.string.tab_sync), AppIcons.Upload),
     )
 
     Column(Modifier.fillMaxSize()) {
