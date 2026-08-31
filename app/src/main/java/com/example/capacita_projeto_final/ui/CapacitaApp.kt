@@ -14,12 +14,14 @@ import com.example.capacita_projeto_final.core.ViewModelFactory
 import com.example.capacita_projeto_final.features.point.presentation.PointDetailScreen
 import com.example.capacita_projeto_final.features.point.presentation.PointDetailViewModel
 import com.example.capacita_projeto_final.features.route.presentation.RouteScreen
+import com.example.capacita_projeto_final.features.route.presentation.RouteMapScreen
 import com.example.capacita_projeto_final.features.route.presentation.RouteViewModel
 import com.example.capacita_projeto_final.features.sync.presentation.SyncViewModel
 import com.example.capacita_projeto_final.features.visit.presentation.VisitScreen
 import com.example.capacita_projeto_final.features.visit.presentation.VisitViewModel
 
 private const val RouteDestination = "route"
+private const val RouteMapDestination = "route/map"
 private const val PointDestination = "point/{pointId}"
 private const val VisitDestination = "visit/{pointId}/{reading}"
 
@@ -45,6 +47,20 @@ fun CapacitaApp(appContainer: AppContainer) {
                 state = state,
                 syncState = syncState,
                 onSync = syncViewModel::synchronize,
+                onOpenMap = { navController.navigate(RouteMapDestination) },
+                onPointClick = { pointId -> navController.navigate("point/$pointId") },
+            )
+        }
+        composable(RouteMapDestination) {
+            val routeViewModel: RouteViewModel = viewModel(
+                factory = ViewModelFactory {
+                    RouteViewModel(appContainer.routeRepository, appContainer.visitRepository)
+                },
+            )
+            val state by routeViewModel.uiState.collectAsStateWithLifecycle()
+            RouteMapScreen(
+                state = state,
+                onBack = navController::popBackStack,
                 onPointClick = { pointId -> navController.navigate("point/$pointId") },
             )
         }

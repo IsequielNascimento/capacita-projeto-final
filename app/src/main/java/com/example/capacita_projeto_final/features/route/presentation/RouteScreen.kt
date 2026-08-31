@@ -38,6 +38,7 @@ fun RouteScreen(
     state: RouteUiState,
     syncState: SyncUiState,
     onSync: () -> Unit,
+    onOpenMap: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
     Scaffold(
@@ -70,6 +71,7 @@ fun RouteScreen(
                 latestVisits = state.latestVisits,
                 syncState = syncState,
                 onSync = onSync,
+                onOpenMap = onOpenMap,
                 onPointClick = onPointClick,
             )
         }
@@ -111,6 +113,7 @@ private fun RouteContent(
     latestVisits: Map<Int, Visit>,
     syncState: SyncUiState,
     onSync: () -> Unit,
+    onOpenMap: () -> Unit,
     onPointClick: (Int) -> Unit,
 ) {
     LazyColumn(
@@ -118,7 +121,7 @@ private fun RouteContent(
         contentPadding = PaddingValues(20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item { RouteSummary(points.size) }
+        item { RouteSummary(pointCount = points.size, onOpenMap = onOpenMap) }
         item { SyncPanel(state = syncState, onSync = onSync) }
         item {
             Text(
@@ -140,8 +143,9 @@ private fun RouteContent(
 }
 
 @Composable
-private fun RouteSummary(pointCount: Int) {
+private fun RouteSummary(pointCount: Int, onOpenMap: () -> Unit) {
     Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpenMap),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(20.dp),
     ) {
@@ -158,9 +162,15 @@ private fun RouteSummary(pointCount: Int) {
                     fontWeight = FontWeight.Bold,
                 )
             }
-            Column(horizontalAlignment = Alignment.End) {
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text("Aldeota", fontWeight = FontWeight.SemiBold)
                 Text("Fortaleza · CE", color = Muted)
+                Text(
+                    text = "Ver mapa  ›",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }
